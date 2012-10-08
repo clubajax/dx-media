@@ -72,7 +72,6 @@ define([
 		renderer:'silverlight',
 
 		postCreate: function(){
-	//z = q
 			this.hasHtmlControls = false; // TODO: really check for this
 			this.init();
 		},
@@ -88,7 +87,7 @@ define([
 			if(this.inited) return;
 			this.inited = 1;
 
-			
+
 			this.canvas = new sl.Canvas({
 				width:this.width,
 				height:this.height,
@@ -128,7 +127,7 @@ define([
 				height:this.height,
 				nostroke:1,
 				grad:theme.getGrad(this.height, theme.medium, theme.dark)
-			}
+			};
 			this.back = new sl.Rect(bk, this.canvas);
 		},
 

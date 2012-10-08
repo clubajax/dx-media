@@ -1,31 +1,23 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 5//EN" "http://www.w3.org/TR/html4/strict.dtd">
 <html lang="en">
+
 <head>
     <title>Test dx-media Controls</title>
 	<link href="../resources/dxControlbar.css" rel="stylesheet" />
-	<style>
-		html, body{
-			width:640px;
-			margin:0;
-			padding:0;
-			background:#ccc;
-		}
-		#player, #player2{
-			width:640px;
-			height:60px;
-			position:relative;
-		}
+	<link href="./test-styles.css" rel="stylesheet" />
+	<meta http-equiv="Content-Type" content="text/html;charset=utf-8" >
 
 	</style>
     <script>
         dojoConfig = {
-			async:1
+			async:1,
+			isDebug:1
 		};
     </script>
     <script src="../../dojo/dojo.js"></script>
 	<script>
 		require([
-				"dx-alias/parser!",
+				"dojo/parser",
 				'dx-media/controls/Controlbar',
 				'dx-media/controls/elements/Play',
 				'dx-media/controls/elements/Fullscreen',
@@ -33,44 +25,56 @@
 				'dx-media/controls/elements/Time',
 				'dx-media/controls/elements/Progress',
 				'dx-media/controls/elements/Duration',
+				'dx-media/controls/elements/Embed',
+				'dx-media/controls/elements/Facebook',
+				'dx-media/controls/elements/Twitter'
 			], function(parser, Controlbar, Play, Fullscreen, Volume, Time, Progress, Duration){
+
+			parser.parse();
 
 			console.info('---- controls 2 ----');
 
-			var controls = new Controlbar({width:640, height:30}, 'player2');
+			var controls = new Controlbar({width:640, height:30});
 			controls.addChildren([
 				new Play({}),
 				new Fullscreen({}),
-				//new Volume({}),
-				//new Time({}),
-				//new Progress({width:100}),
-				//new Duration({})
+				new Volume({}),
+				new Time({}),
+				new Progress({width:100}),
+				new Duration({})
 			]);
+
+			document.getElementById('player2').appendChild(controls.domNode);
 
 		});
 
 	</script>
 </head>
 <body>
+	<h1>Test dx-media Controls</h1>
+	<div class='row'>
+		<div class='pWrap s480'>
+			<label>Markup Controls</label>
+			<div id="player">
+				<div data-dojo-type="dx-media/controls/Controlbar" data-dojo-props="width:640, height:30">
+					<div data-dojo-type="dx-media/controls/elements/Play"></div>
+					<div data-dojo-type="dx-media/controls/elements/Fullscreen"></div>
+					<div data-dojo-type="dx-media/controls/elements/Volume"></div>
 
-    <div id="player">
-		<div data-dojo-type="dx-media/controls/Controlbar" data-dojo-props="width:640, height:30">
-			<div data-dojo-type="dx-media/controls/elements/Play"></div>
-			<div data-dojo-type="dx-media/controls/elements/Fullscreen"></div>
-			<div data-dojo-type="dx-media/controls/elements/Volume"></div>
+						<div data-dojo-type="dx-media/controls/elements/Time"></div>
+						<div data-dojo-type="dx-media/controls/elements/Progress" data-dojo-props='width:100'></div>
+						<div data-dojo-type="dx-media/controls/elements/Duration"></div>
 
-				<div data-dojo-type="dx-media/controls/elements/Time"></div>
-				<div data-dojo-type="dx-media/controls/elements/Progress" data-dojo-props='width:100'></div>
-				<div data-dojo-type="dx-media/controls/elements/Duration"></div>
-
-			<div data-dojo-type="dx-media/controls/elements/Embed"></div>
-			<div data-dojo-type="dx-media/controls/elements/Facebook"></div>
-			<div data-dojo-type="dx-media/controls/elements/Twitter"></div>
+					<div data-dojo-type="dx-media/controls/elements/Embed"></div>
+					<div data-dojo-type="dx-media/controls/elements/Facebook"></div>
+					<div data-dojo-type="dx-media/controls/elements/Twitter"></div>
+				</div>
+			</div>
+		</div>
+		<div class='pWrap2 s480'>
+			<label>Programmatic Controls</label>
+			<div id='player2'></div>
 		</div>
 	</div>
-
-	<div id='player2'></div>
-
-
 </body>
 </html>

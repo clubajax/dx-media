@@ -1,57 +1,30 @@
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 5//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<!DOCTYPE HTML>
 <html lang="en">
 <head>
     <title>Test dx-flash Video</title>
-	<link href="../resources/dxHtml5Video.css" rel="stylesheet" />
-	<style>
-		html, body{
-			margin:0;
-			padding:5px 20px;
-			background:#ccc;
-			font-family: sans-serif;
-		}
-		.row{
-			position: relative;
-		}
-		.pWrap, .pWrap2{
-			width:320px;
-			position:absolute;
-			top:0;
-			left:0;
-		}
-		.pWrap2{
-			left:340px;
-		}
-		label{
-			display: block;
-			text-align: center;
-		}
-		#player, #player2{
-			width:320px;
-			height:180px;
-		}
-
-	</style>
+	<link href="../resources/dxHtml5Video.css" rel="stylesheet" /><link href="./test-styles.css" rel="stylesheet" />
+	<meta http-equiv="Content-Type" content="text/html;charset=utf-8" >
     <script>
         dojoConfig = {
-			async:1
+			async:1,
+			isDebug:1
 		};
     </script>
     <script src="../../dojo/dojo.js"></script>
 	<script>
 		require([
-				"dx-alias/parser!",
-				"dx-alias/dom",
+				"dojo/parser",
 				"dx-media/flash/Video"
-			], function(parser, dom, Video){
-
-			new Video({
-				width:320,
-				height:180,
-				controls:true,
-				autoplay:true,
-				src:'../tests/media/video/SightAndSound_sm.mp4'
-			}, 'player2');
+			], function(parser, Video){
+			
+				parser.parse();
+				new Video({
+					width:320,
+					height:180,
+					controls:true,
+					autoplay:true,
+					src:'../tests/media/video/SightAndSound_sm.mp4'
+				}, 'player2');
 		});
 	</script>
 </head>

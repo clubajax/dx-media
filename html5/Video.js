@@ -40,8 +40,8 @@ define([
 		postMixInProperties: function(){
 
 			this.inherited(arguments);
-			
-			if(typeof this.attributes == 'string') this.attributes = [];
+
+			if(typeof this.attributes == 'string') { this.attributes = []; }
 			var options = {
 				width:this.width,
 				height:this.height,
@@ -49,8 +49,8 @@ define([
 				buffer:this.buffer,
 				preload:this.preload
 			};
-			if(this.src) options.src = this.src;
-			if(this.autoplay) options.autoplay = true;
+			if(this.src) { options.src = this.src; }
+			if(this.autoplay) { options.autoplay = true; }
 
 			for(var nm in options){
 				this.attributes.push(nm+'="'+options[nm]+'"');
@@ -58,21 +58,24 @@ define([
 		},
 
 		postCreate: function(){
+			if(!this.src){
+				return;
+			}
 			// FIXES IPAD BUG
 			// iPad has trouble determining which source to play
 			// so we just specifically load it
-			if(has('ipad')) this._setVideo(p);
+			if(has('ipad')) { this._setVideo(p); }
 
 			this.volume(this.initialVolume);
 			this.setupEvents();
 			//timer(this, 'connectEvents', 1)
-			log('video ready.')
+			log('video ready.');
 		},
 
 
 
 		setupEvents: function(){
-			if(has('iphone')) return;
+			if(has('iphone')) { return; }
 
 			var meta, ready;
 
@@ -86,14 +89,14 @@ define([
 					this.complete = true;
 					this.onPause();
 					this.hasPlayed = false;
-					this.onComplete(this.getMeta())
+					this.onComplete(this.getMeta());
 				},
 				"seeked":"onSeeked",
 				 "loadedmetadata": function(evt){
-					log("   ---------- > meta pre event:", evt)
+					log("   ---------- > meta pre event:", evt);
 					meta = evt.target;
 					meta.isAd = this.isAd;
-					if(ready) this._onmeta(meta);
+					if(ready) { this._onmeta(meta); }
 				}
 			}, this);
 
@@ -104,7 +107,7 @@ define([
 			if(this.sources){
 				this.sources.forEach(function(s){
 					// not disconnectable. May throw multiple errors.
-					on(s.node, "error", this, "onError");
+					if(s.node) { on(s.node, "error", this, "onError"); }
 				}, this);
 			}
 
@@ -112,7 +115,7 @@ define([
 				if (this.domNode.readyState > 0) {
 					ready = true;
 					tmr.remove();
-					if(meta) this._onmeta(meta);
+					if(meta) { this._onmeta(meta); }
 				}
 			},10000, 200);
 		},

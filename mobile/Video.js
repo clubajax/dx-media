@@ -14,7 +14,7 @@ define([
 	//		devices.
 	//		This is also the Base Class for the other Video renderers.
 	//
-	var log = logger('MOV', 0);
+	var log = logger('MOV', 1);
 
 	var
 		HTML5TYPES = {
@@ -48,7 +48,7 @@ define([
 
 				renderer.some(function(r){
 					sources.some(function(s){
-						log('   test', s.type, r)
+						log('   test', s.type, r);
 						if(supports(s.type, r)){
 							src = s.src;
 							renderer = r;
@@ -75,52 +75,68 @@ define([
 		},
 
 		supports = function(type, renderer){
+			var key;
 			if(renderer == 'html5' && has(type)){
 				return true;
 			}else if(renderer == 'silverlight'){
-				for(var nm in SLTYPES) if(SLTYPES[nm] == type) return true;
+				for(key in SLTYPES){ if(SLTYPES[key] == type){ return true; }}
 			}else if(renderer == 'flash'){
-				for(var nm in FLASHTYPES) if(FLASHTYPES[nm] == type) return true;
+				for(key in FLASHTYPES){ if(FLASHTYPES[key] == type){ return true; }}
 			}
 			return false;
 		},
 
 		deriveType =  function(filename){
-			if(!filename) return null;
+			if(!filename){ return null; }
 			var ext = lang.last(filename.split('.'));
 			return TYPES[ext];
-		}
+		},
 
-		getSources = function(node, src){
-
-			if(src){
-				return [{
-					src:src,
-					node:node,
-					type:deriveType(src)
-				}];
-			}
-
-			if(dom.prop(node, 'src')){
-				return [{
-					src:dom.prop(node, 'src'),
-					node:node,
-					type:deriveType(dom.prop(node, 'src'))
-				}];
-			}
-			var sources = dom.byTag('source', node);
-			if(!sources || !sources.length) return [];
+		getSources = function(node, options){
 
 			var a = [];
-			sources.forEach(function(node){
-				a.push({
+
+			if(options && options.src){
+				return [{
+					src:options.src,
 					node:node,
-					src:dom.prop(node, 'src'),
-					type:dom.prop(node, 'type') || deriveType(dom.prop(node, 'src'))
+					type:deriveType(options.src)
+				}];
+			}else if(options.sources){
+				options.sources.forEach(function(s){
+					if(typeof s == 'string'){
+						a.push({
+							node:null,
+							src:s,
+							type: deriveType(s)
+						});
+					}else{
+						a.push({
+							node:null,
+							src:s.src,
+							type: s.type || deriveType(s.src)
+						});
+					}
 				});
-			}, this);
+			}else{
+				if(dom.prop(node, 'src')){
+					return [{
+						src:dom.prop(node, 'src'),
+						node:node,
+						type:deriveType(dom.prop(node, 'src'))
+					}];
+				}
+				sources = dom.byTag('source', node);
+				sources.forEach(function(node){
+					a.push({
+						node:node,
+						src:dom.prop(node, 'src'),
+						type:dom.prop(node, 'type') || deriveType(dom.prop(node, 'src'))
+					});
+				}, this);
+			}
 			return a;
-		}
+		};
 
 
 
@@ -136,26 +152,28 @@ define([
 		showing:true,
 
 		// autoplay: Boolean
-		// 		If true, video plays on load. If false, waits until Play is
-		// 		clicked.
+		//		If true, video plays on load. If false, waits until Play is
+		//		clicked.
 		autoplay:false,
 
 		// controls: Boolean
-		// 		If true, uses native controls. Else, assumes either custom
-		// 		controls, or no controls.
-		// 		NOTE: ignored for mobile/Video. Used in extended classes.
+		//		If true, uses native controls. Else, assumes either custom
+		//		controls, or no controls.
+		//		NOTE: ignored for mobile/Video. Used in extended classes.
 		controls:false,
 
 		// attributes: String
-		// 		Additional HTML5 attributes to add to the node
+		//		Additional HTML5 attributes to add to the node
 		attributes:'',
 
+		sources:null,
+
 		// renderer: [readonly] String
-		// 		The type of video renderer to be used.
+		//		The type of video renderer to be used.
 		renderer:'html5',
 
 		constructor: function(/*Object*/options, /*DOMNode*/node){
-			log('MOBILE VIDEO CONSTR', options, node)
+			log('MOBILE VIDEO CONSTR', options, node);
 
 			// need to check if this is parent and if so, call:
 			this.prepareVideoAttributes(options, node);
@@ -163,21 +181,28 @@ define([
 
 		prepareVideoAttributes: function(/*Object*/options, /*DOMNode*/node){
 			// A properly formed video tag works fine out of the gate.
-			log('prepareVideoAttributes', node, options, this.renderer)
-			if(node || options.src){
-				this.sources = getSources(node, options.src);
-				log('this.sources', this.sources, this.renderer)
+			log('prepareVideoAttributes', node, options, this.renderer);
+
+			console.log('this.sources ', this.sources );
+
+			if(node || options){
+				this.sources = getSources(node, options);
+				log('this.sources', this.sources, this.renderer);
 				var obj = determineSource(this.sources, this.renderer);
 				this.src = obj.src;
 				this.renderer = obj.renderer;
 				log('src:', this.src);
+				if(!this.src){
+					console.error('No video renderer available for supplied sources');
+					this.src = "";
+				}
 			}
 			if(node){
 				if(!this.width || /\%/.test(this.width)){
 					var box = dom.box(node);
 					this.width = box.w;
 					this.height = box.h;
-					log('size:', this.width, this.height)
+					log('size:', this.width, this.height);
 				}
 			}
 			if(this.width){
@@ -210,6 +235,7 @@ define([
 				});
 			}
 
+			if(this.src){
 			on(this.domNode, "play", this, function(){
 				playing = 1;
 				this.onPlay();
@@ -224,8 +250,10 @@ define([
 				this.onComplete(this.domNode);
 				this.onStop(this.domNode);
 			});
+			}
 
-			var box = dom.box(window); log('window size:', box.w, box.h);
+			var box = dom.box(window);
+			log('window size:', box.w, box.h);
 
 		},
 
@@ -294,8 +322,8 @@ define([
 			var o = dom.box(this.domNode.parentNode);
 			var v = this.domNode;
 
-			var ah = o.w/this.videoWidth*this.videoHeight || o.h;
-			var aw = o.h/this.videoWidth*this.videoHeight || o.w;
+			//var ah = o.w/this.videoWidth*this.videoHeight || o.h;
+			//var aw = o.h/this.videoWidth*this.videoHeight || o.w;
 
 			if(this.videoAspect){ // else no video yet
 				if(o.h/o.w > this.videoAspect){
@@ -316,7 +344,8 @@ define([
 		},
 
 		resize: function(box){
-			if(!box) return; // block rogue dojo calls
+			// TODO: should I make this a different method name?
+			if(!box){ return; } // block rogue dojo calls
 
 			this.isFullscreen = box.isFullscreen;
 			var s = this.isFullscreen ?
@@ -343,7 +372,7 @@ define([
 			//	summary:
 			//		Shows the video component.
 			//
-			if(this.showing) return;
+			if(this.showing){ return; }
 			this.showing = 1;
 			dom.show(this.domNode);
 		},
@@ -353,7 +382,7 @@ define([
 			//		Shows the video component. Does not apply in all cases -
 			//		namely flash/Video which cannot be hidden without reseting.
 			//
-			if(!this.showing) return;
+			if(!this.showing){ return; }
 			this.pause();
 			this.showing = 0;
 			dom.hide(this.domNode);
@@ -362,7 +391,7 @@ define([
 
 		play: function(){
 			// should be overridden by extending class
-			console.log('PLAY')
+			log('PLAY');
 			this.domNode.play();
 		},
 
@@ -392,7 +421,7 @@ define([
 		isPlaying: function(){
 			//	summary:
 			//		A getter for determining if video is playing.
-			// 		Should be overridden by extending class.
+			//		Should be overridden by extending class.
 			return false;
 		},
 
@@ -423,7 +452,7 @@ define([
 		getMeta: function(){
 			//	summary:
 			//		Returns video metadata.
-			// 		Should be overridden by extending class.
+			//		Should be overridden by extending class.
 			return {};
 		},
 
@@ -446,8 +475,8 @@ define([
 
 		onLoad: function(/* Object */ Video){
 			// summary:
-			// 		Fired when the player has loaded
-			// 		NOT when the video has loaded
+			//		Fired when the player has loaded
+			//		NOT when the video has loaded
 			//
 		},
 
@@ -465,10 +494,10 @@ define([
 
 		onClick: function(/* Object */ evt){
 			// summary:
-			// 		TODO: Return x/y of click
-			// 		Fires when the player is clicked
-			// 		Could be used to toggle play/pause, or
-			// 		do an external activity, like opening a new
+			//		TODO: Return x/y of click
+			//		Fires when the player is clicked
+			//		Could be used to toggle play/pause, or
+			//		do an external activity, like opening a new
 			//		window.
 		},
 
@@ -485,7 +514,7 @@ define([
 			//		received. Some renderers will have different information
 			//		than others - like Flash, which has audio codec info.
 			//		The following properties are garaunteed:
-			// 			p: Float
+			//			p: Float
 			//				The percentage of the video ellapsed
 			//			time: Number,
 			//				The time, in seconds of the position of the video
@@ -509,38 +538,38 @@ define([
 
 		onRestart: function(){
 			// summary:
-			// 	Fires when the video is restarted after completion.
+			//		Fires when the video is restarted after completion.
 		},
 
 		onStart: function(/* Object */ meta){
 			// summary:
-			// 		Fires when video starts
+			//		Fires when video starts
 		},
 
 		onPlay: function(/* Object */ meta){
 			// summary:
-			// 		Fires when video starts or resumes
+			//		Fires when video starts or resumes
 		},
 
 		onPause: function(/* Object */ meta){
 			// summary:
-			// 		Fires when video stops
+			//		Fires when video stops
 		},
 
 		onSeek: function(/* Object */ meta){
 			// summary:
-			// 		Fires at the start, during, and the end of dragging the
-			// 		progress handle.
+			//		Fires at the start, during, and the end of dragging the
+			//		progress handle.
 		},
 
 		onStop: function(/* Object */ meta){
 			// summary:
-			// 		Fired on pause OR end. (I think I use this for mobile only)
+			//		Fired on pause OR end. (I think I use this for mobile only)
 		},
 
 		onComplete: function(/* Object */ meta){
 			// summary:
-			// 		Fires on completion of video
+			//		Fires on completion of video
 		},
 
 		onBuffer: function(/* Boolean */ isBuffering){
@@ -552,28 +581,28 @@ define([
 
 		onError: function(/* Object */ errorObject){
 			// summary:
-			// 		Fired when the player encounters an error
+			//		Fired when the player encounters an error
 		},
 
 		onStatus: function(/* String */status){
 			// summary:
-			// 		The status of the video from the SWF
-			// 		playing, stopped, bufering, etc.
+			//		The status of the video from the SWF
+			//		playing, stopped, bufering, etc.
 		},
 
 		onFullscreen: function(/* Boolean */ isFullscreen){
 			// summary:
-			// 		Fired when video toggles fullscreen
+			//		Fired when video toggles fullscreen
 		},
 
 		onSize: function(size){
 			// summary:
-			// 		Fires on video resize.
+			//		Fires on video resize.
 		},
 
 		onResize: function(){
 			// summary:
-			// 		Fired when video resizes, but not when it goes fullscreen
+			//		Fired when video resizes, but not when it goes fullscreen
 		}
 	});
 

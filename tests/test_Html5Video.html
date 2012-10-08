@@ -1,55 +1,37 @@
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 5//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<!DOCTYPE HTML>
 <html lang="en">
+<meta http-equiv="Content-Type" content="text/html;charset=utf-8" >
 <head>
     <title>Test dx-media HTML5 Video</title>
 	<link href="../resources/dxHtml5Video.css" rel="stylesheet" />
+	<link href="./test-styles.css" rel="stylesheet" />
 	<style>
-		html, body{
-			margin:10;
-			padding:0;
-			background:#ccc;
-			font-family: sans-serif;
-		}
-		.row{
-			position: relative;
-		}
-		.pWrap, .pWrap2{
-			width:320px;
-			position:absolute;
-			top:0;
-			left:0;
-		}
-		.pWrap2{
-			left:340px;
-		}
-		label{
-			display: block;
-			text-align: center;
-		}
-		#player, #player2{
-			width:320px;
-			height:180px;
-		}
+
 
 	</style>
     <script>
         dojoConfig = {
 			async:1,
-			isDebug:0
+			isDebug:1
 		};
     </script>
     <script src="../../dojo/dojo.js"></script>
 	<script>
 		require([
-				"dx-alias/parser!",
-				"dx-alias/dom",
+				"dojo/parser",
 				"dx-media/Html5/Video"
-			], function(parser, dom, Video){
-
-			new Video({
-				width:640, height:360, controls:true, autoplay:true,
-				src:'./media/video/SightAndSound.webm'
-			}, 'player2');
+			], function(parser, Video){
+				parser.parse();
+				new Video({
+					controls:true,
+					autoplay:true,
+					sources:[
+						{
+							src:'./media/video/Dojo_short.mp4'
+						},
+						'./media/video/Dojo_short.webm'
+					]
+				}, 'player2');
 		});
 	</script>
 </head>
@@ -60,8 +42,8 @@
 			<label>Markup Player</label>
 			<div id="player">
 				<video id="video" data-dojo-type="dx-media/Html5/Video" data-dojo-props="width:320, height:180, controls:true, autoplay:true">
-					<source src='./media/video/SightAndSound_sm.mp4'></source>
-					<source src='./media/video/SightAndSound.webm'></source>
+					<source src='./media/video/Dojo_short.mp4'></source>
+					<source src='./media/video/Dojo_short.webm'></source>
 				</video>
 			</div>
 		</div>

@@ -4,55 +4,27 @@
     <title>Test dx-media HTML5 Video Controls</title>
 	<link href="../resources/dxHtml5Video.css" rel="stylesheet" />
 	<link href="../resources/dxControlbar.css" rel="stylesheet" />
-	<style>
-		html, body{
-			width:640px;
-			margin:10;
-			padding:0;
-			background:#ccc;
-			font-family: sans-serif;
-		}
-		.row{
-			position: relative;
-		}
-		.pWrap, .pWrap2{
-			width:320px;
-			position:absolute;
-			top:0;
-			left:0;
-		}
-		.pWrap2{
-			left:340px;
-		}
-		label{
-			display: block;
-			text-align: center;
-		}
-		#player, #player2{
-			width:320px;
-			height:180px;
-			position: relative;
-		}
-
-	</style>
+	<link href="./test-styles.css" rel="stylesheet" />
+	<meta http-equiv="Content-Type" content="text/html;charset=utf-8" >
     <script>
         dojoConfig = {
 			async:1,
-			debug:1
+			isDebug:1
 		};
     </script>
     <script src="../../dojo/dojo.js"></script>
 	<script>
 		require([
-				"dx-alias/parser!",
-				"dx-alias/dom",
+				"dojo/parser",
 				"dx-media/Html5/Video"
-			], function(parser, dom, Video){
+			], function(parser, Video){
 
-			//new Video({
-			//	width:640, height:360, controls:true, autoplay:true,
-			//	src:'./media/video/SightAndSound.webm'
-			//}, 'player2');
+			parser.parse();
+
+			new Video({
+				width:640, height:360, controls:true, autoplay:true,
+				src:'./media/video/SightAndSound.webm'
+			}, 'player2');
 		});
 	</script>
 </head>
@@ -61,7 +33,7 @@
 	<div class='row'>
 		<div class='pWrap'>
 			<label>Markup Player</label>
-			<div id="player">
+			<!--<div id="player">
 				<video id="video" data-dojo-type="dx-media/Html5/Video" data-dojo-props="width:320, height:180">
 					<source src='./media/video/DojoMaster.mp4'></source>
 					<source src='./media/video/SightAndSound.webm'></source>
@@ -80,14 +52,14 @@
 					<div data-dojo-type="dx-media/controls/elements/Twitter"></div>
 				</div>
 				<div data-dojo-type="dx-media/controls/Controller" data-dojo-props="controls:'controls',video:'video',preview:'preview',screenButton:'screenButton'"></div>
-			</div>
+			</div>-->
 		</div>
-		<!--<div class='pWrap2'>
+		<div class='pWrap2'>
 			<label>Programmatic Player</label>
 			<div id='player2'>
 
 			</div>
-		</div>-->
+		</div>
 	</div>
 </body>
 </html>
