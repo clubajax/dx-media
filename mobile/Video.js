@@ -41,6 +41,8 @@ define([
 			//		Determines from a list of sources, which video would be most
 			//		optimal to play in the current video renderer, and returns
 			//		the src (file path).
+			//	Note:
+			//		Can also be called from other modules with: Mobile.determineSource
 
 			//
 			var src;
@@ -93,7 +95,13 @@ define([
 		},
 
 		getSources = function(node, options){
-
+			//	summary:
+			//		Gets a list of sources, from either options.src
+			//		or from the node's children
+			//	Note:
+			//		Can also be called from other modules with: Mobile.getSources
+			//
+			log('getSources', options, node);
 			var a = [];
 
 			if(options && options.src){
@@ -118,14 +126,15 @@ define([
 						});
 					}
 				});
+			}else if(dom.prop(node, 'src')){
+				return [{
+					src:dom.prop(node, 'src'),
+					node:node,
+					type:deriveType(dom.prop(node, 'src'))
+				}];
+
 			}else{
-				if(dom.prop(node, 'src')){
-					return [{
-						src:dom.prop(node, 'src'),
-						node:node,
-						type:deriveType(dom.prop(node, 'src'))
-					}];
-				}
+				log('get source nodes...');
 				sources = dom.byTag('source', node);
 				sources.forEach(function(node){
 					a.push({

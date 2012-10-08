@@ -30,7 +30,7 @@ define([
 	var log = logger('PLR', 1);
 
 	var
-		isMobile = has('mobile'),
+		//isMobile = has('mobile'),
 
 		renderers = ['html5','silverlight','flash'],
 
@@ -57,20 +57,21 @@ define([
 
 		constructor: function(/*Object*/options, node){
 
-			log('options', !!options.src, options)
+			log('Player constructor options', !!options.src, options, node);
 
-			this.sources = Mobile.getSources(node, options.src);
+			this.sources = Mobile.getSources(node, options);
 			var obj = Mobile.determineSource(this.sources, renderers);
 			this.renderer = obj.renderer;
 			this.src = obj.src;
 
-			log('renderer/src:', this.renderer, this.src)
+			log('renderer/src:', this.renderer, this.src);
+
 		},
 
 		postCreate: function(){
 			log('SRC:', this.src);
 			log('poster:', this.poster);
-			var node = this.containerNode;
+			//var node = this.containerNode;
 			var components = {};
 
 			if(!this.width){
@@ -80,11 +81,11 @@ define([
 			}
 
 			log('creating video component type:', this.renderer);
-			
+
 			this.video = components.video = this.addChild(new classes[this.renderer]({
 				src:this.src,
 				width:this.width,
-				height:this.height,
+				height:this.height
 			}));
 
 			if(this.poster){
@@ -110,9 +111,6 @@ define([
 				log('components', components);
 				this.controller = new Controller(components);
 			}
-
-
-
 		}
 	});
 

@@ -1,71 +1,47 @@
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 5//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<!DOCTYPE HTML>
 <html lang="en">
 <head>
     <title>Test dx-media Player</title>
 	<link href="../resources/dxHtml5Video.css" rel="stylesheet" />
 	<link href="../resources/dxControlbar.css" rel="stylesheet" />
-	<style>
-		html, body{
-			width:640px;
-			margin:10;
-			padding:0;
-			background:#ccc;
-			font-family: sans-serif;
-		}
-		.row{
-			position: relative;
-		}
-		.pWrap, .pWrap2{
-			width:320px;
-			position:absolute;
-			top:0;
-			left:0;
-		}
-		.pWrap2{
-			left:340px;
-		}
-		label{
-			display: block;
-			text-align: center;
-		}
-		#player, #player2{
-			width:320px;
-			height:180px;
-		}
-		.dxPlayer{
-			position:relative;
-			width:100%;
-			height: 100%;
-		}
+	<link href="./test-styles.css" rel="stylesheet" />
+	<meta http-equiv="Content-Type" content="text/html;charset=utf-8" >
 
-	</style>
     <script>
         dojoConfig = {
 			async:1,
-			isDebug:0
+			isDebug:1
+		};
+    </script>
+
+    <script>
+        dojoConfig = {
+			async:1,
+			isDebug:1
 		};
     </script>
     <script src="../../dojo/dojo.js"></script>
 	<script>
 		require([
-				'dx-alias/parser!',
+				'dojo/parser',
 				'dx-alias/dom',
 				'dx-media/player/Player'
 			], function(parser, dom, Player){
+				parser.parse();
 				//
 				// TODO: Test creating widget then adding to DOM
 				//
 				if(dom.byId('player2')){
 					new Player({
-						src:'./media/video/DojoMaster.mp4',
-						poster:'media/images/SightAndSound.jpg',
+						src:'./media/video/Dojo.mp4',
+						poster:'media/images/Dojo.png',
 						controls:true
 					}, 'player2');
 				}
 				if(dom.byId('player3')){
 					new Player({
-						src:'./media/video/Grog.flv',
-						poster:'media/images/SightAndSound.jpg',
+						src:'./media/video/Dojo.mp4',
+						poster:'media/images/Dojo.png',
 						controls:true
 					}, 'player3');
 				}
@@ -75,9 +51,9 @@
 <body>
 	<h1>Test dx-media Player</h1>
     <div id="player">
-		<video data-dojo-type="dx-media/player/Player" data-dojo-props="width:320, height:180, poster:'media/images/SightAndSound.jpg'">
-			<source src='./media/video/DojoMaster.mp4'></source>
-			<source src='./media/video/SightAndSound.webm'></source>
+		<video data-dojo-type="dx-media/player/Player" data-dojo-props="width:320, height:180, poster:'media/images/Dojo.png', controls:true">
+			<source src='./media/video/Dojo.webm'></source>
+			<source src='./media/video/Dojo.mp4'></source>
 		</video>
 	</div>
 	<!--<div id='player2'></div>

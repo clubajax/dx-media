@@ -31,14 +31,14 @@ define([
 
 	var delayHandle,
 		isReady = function(ctx, name){
-			if(delayHandle) delayHandle.remove();
+			if(delayHandle){  delayHandle.remove(); }
 			var f = isReady.caller.bind(ctx);
-			if(ctx[name]) return true;
+			if(ctx[name]) { return true; }
 			delayHandle = timer(function(){
 				f();
 			}, 100);
 			return false;
-		}
+		};
 
 	return declare("dx-media.silverlight.Video", [Mobile], {
 
@@ -84,7 +84,7 @@ define([
 
 		init: function(){
 			log('stylesheet loaded, ready to build...');
-			if(this.inited) return;
+			if(this.inited) { return; }
 			this.inited = 1;
 
 
@@ -100,7 +100,7 @@ define([
 
 		onCanvasReady: function(sender){
 			log(' --------------------- onCanvasReady');
-			if(this.wasReady) return;
+			if(this.wasReady){  return; }
 			this.wasReady = 1;
 			this.buildBack();
 			this.buildVideo();
@@ -108,15 +108,15 @@ define([
 
 			if(!this.fsRemoved){
 				this.nativeControls = new Controls({width:this.width, height:this.height, video:this}, this.back);
-				if(!this.controls) this.hideControls();
+				if(!this.controls) { this.hideControls(); }
 			}
 
 			this.setupEvents();
 
 			timer(this, function(){
-				if(this.src) this.setVideo(this.src);
+				if(this.src){  this.setVideo(this.src); }
 			}, 100);
-			console.warn('Video Built - HOOK UP HTML5 -------------------------- video source.', this.src)
+			console.warn('Video Built - HOOK UP HTML5 -------------------------- video source.', this.src);
 		},
 
 		buildBack: function(){
@@ -141,12 +141,12 @@ define([
 		},
 
 		crashTest: function(){
-			// summary:
-			// 		Test that the plugin is still working.
-			// 		I haven't been working with Silverlight long enough to know
-			// 		when it crashes. I do know that if you size it to something
-			// 		it doesn't like (usually bigger) it can crash the plugin.
-			if(this.crashTested) return;
+			//	summary:
+			//		Test that the plugin is still working.
+			//		I haven't been working with Silverlight long enough to know
+			//		when it crashes. I do know that if you size it to something
+			//		it doesn't like (usually bigger) it can crash the plugin.
+			if(this.crashTested){  return; }
 			this.crashTested = 1;
 			//console.log('crash test....');
 			timer(this, function(){
@@ -154,7 +154,7 @@ define([
 					//console.log('crash test:', this.getTime());
 				}catch(e){
 					this.timerHandle.pause();
-					console.error('Silverlight crashed.')
+					console.error('Silverlight crashed.');
 				}
 			}, 500);
 		},
@@ -162,7 +162,7 @@ define([
 		setupEvents: function(s){
 			// http://msdn.microsoft.com/en-us/library/system.windows.controls.mediaelement_events%28v=vs.95%29.aspx
 
-			if(this.connections) return;
+			if(this.connections) { return; }
 			this.connections = [];
 
 			log(' ------------ setupEvents');
@@ -175,20 +175,20 @@ define([
 
 			var ae = function(eventName, fn){
 				var pauseable = lang.bind(this, fn);
-				var event = {
+				/*var event = {
 					token:0,
 					paused:0,
 					fn: lang.bind(this, function(evt){
 						pauseable(evt);
 					})
-				}
+				}*/
 				this.video.node.AddEventListener(eventName, pauseable);
 				return lang.bind(this, "on"+eventName);
 			}.bind(this);
 
 			var csc = ae('CurrentStateChanged', function(){
 				var state = this.state = this.video.node.CurrentState;
-				log('state:', state)
+				log('state:', state);
 				if(state == "Playing"){ this.hasPlayed = true; this.onPlay(); }
 				if(state == "Paused"){ this.onPause(); }
 				if(state == "Playing" || state == "Buffering" || state == "Opening") {
@@ -239,7 +239,7 @@ define([
 				}else{
 					this.width = this.wasWidth;
 					this.height = this.wasHeight;
-					if(this.hasHtmlControls) this.hideControls();
+					if(this.hasHtmlControls){  this.hideControls(); }
 				}
 				this.resize();
 				this.onFullscreen();
@@ -301,7 +301,7 @@ define([
 		},
 
 		centerVideo: function(){
-			log('centerVideo, isFullscreen:', this.isFullscreen)
+			log('centerVideo, isFullscreen:', this.isFullscreen);
 			var mw = this.naturalVideoWidth;
 			var mh = this.naturalVideoHeight;
 			var cw = this.isFullscreen ? window.screen.width  : this.width;
@@ -339,7 +339,7 @@ define([
 					// cn is wider
 					h = ch;
 					y = 0;
-					w = mw * ch/mh
+					w = mw * ch/mh;
 					x = (cw - w)/2;
 				}
 
@@ -387,8 +387,8 @@ define([
 
 
 		setVideo: function(src, noPlay){
-			if(src) this.src = src;
-			if(!isReady(this, 'video')) return;
+			if(src) { this.src = src; }
+			if(!isReady(this, 'video')) { return; }
 			this.complete = false;
 			this.video.node.Source = this.src;
 			if(!noPlay && this.autoplay){
@@ -407,7 +407,7 @@ define([
 			try{
 			this.video.node.Play();
 			}catch(e){
-				console.error(e)
+				console.error(e);
 			}
 		},
 		hide: function(){
@@ -455,7 +455,7 @@ define([
 				}
 				diff = this.getTime() - this.timeWas;
 			}else{
-				var time = cmd * this.duration
+				var time = cmd * this.duration;
 				var tc = lang.timeCode(time, 'h:m:s.m');
 				//console.log('seek:', cmd, time, tc);
 				this.video.node.Position = tc;
@@ -477,15 +477,15 @@ define([
 			//var box = dom.box(this.domNode);
 
 			this.isFullscreen = !this.isFullscreen;
-			this.width = size.w
-			this.height = size.h
+			this.width = size.w;
+			this.height = size.h;
 			this.canvas.size(box.w, box.h);
 			this.resize();
 		},
 
 		resize: function(size){
-			if(!size) return;
-			if(!isReady(this, 'videoReady')) return;
+			if(!size) { return; }
+			if(!isReady(this, 'videoReady')) { return; }
 
 			log('resize');
 
@@ -497,25 +497,23 @@ define([
 			this.back.size({width:this.width, height:this.height});
 
 			this.centerVideo();
-			this.nativeControls && this.nativeControls.onFullscreen(this.isFullscreen, this.controls);
+			if(this.nativeControls) { this.nativeControls.onFullscreen(this.isFullscreen, this.controls); }
 		},
 
 		showControls: function(){
-			if(this.fsRemoved) return;
-			this.nativeControls && this.nativeControls.show();
+			if(this.fsRemoved) { return; }
+			if(this.nativeControls) { this.nativeControls.show(); }
 		},
 
 		hideControls: function(){
-			if(this.fsRemoved) return;
-			this.nativeControls && this.nativeControls.hide();
+			if(this.fsRemoved) { return; }
+			if(this.nativeControls) { this.nativeControls.hide(); }
 		},
 
 		removeFullscreen: function(){
 			this.hideControls();
 			this.fsRemoved = true;
 		},
-
-
 
 		getMeta: function(){
 
@@ -532,12 +530,12 @@ define([
 				duration:dur,
 				remaining:rem,
 				isAd:false
-			}
+			};
 		},
 
 		_onmeta: function(/*Object*/m){
 			this.meta = m;
-			this._metaHandle && this._metaHandle.remove();
+			if(this._metaHandle) { this._metaHandle.remove(); }
 			if(!this.premetaFired){
 				this.premetaFired = 1;
 				this.onPreMeta(m);
