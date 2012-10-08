@@ -12,11 +12,12 @@ define([
 
 	var log = logger('VOL', 0);
 
-	return declare('dx-media.controls.elements.Volume', [_Button], {
+	return declare(_Button, {
 
 		innerTemplate: '<div class="dxIconFx ${iconClass}" data-dojo-attach-point="iconNode" data-dojo-attach-events="click:onClick"><div class="normal"></div><div class="hover"></div><div class="active"></div></div>',
 		buttonClass:'dxVolumeBtn',
 		iconClass:'dxVolumeIcon',
+		controlType:'Volume',
 
 		postCreate: function(){
 			this.inherited(arguments);
@@ -37,7 +38,7 @@ define([
 		},
 
 		onUpdate: function(/*Float*/percentage){
-			log('percentage', percentage)
+			log('percentage', percentage);
 		},
 
 		onClick: function(){

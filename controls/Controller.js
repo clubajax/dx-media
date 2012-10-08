@@ -37,19 +37,21 @@ define([
 
 			this.displayElements = [];
 
-			['controls', 'video', 'preview', 'screenButton', 'slideshow', 'vtour'].forEach(function(str){
-				this[str] = this.getObject(str);
-				//log('   get', str, 'got', this[str])
-				if(this[str]) this.displayElements.push(this[str]);
-			}, this);
+
 
 			this.id = lang.uid('VideoControl');
 			timer(this, 'startup', 30);
 		},
 
 		startup: function(){
-			if(this._started) return; this._started = 1;
+			if(this._started) { return; } this._started = 1;
 			this._connections = [];
+
+			['controls', 'video', 'preview', 'screenButton', 'slideshow', 'vtour'].forEach(function(str){
+				this[str] = this.getObject(str);
+				log('   get', str, 'got', this[str]);
+				if(this[str]) { this.displayElements.push(this[str]); }
+			}, this);
 
 			log('controls:', this.controls);
 			log('controller', this);
@@ -58,7 +60,8 @@ define([
 			this.buttons = [];
 			if(this.controls){
 				this.buttons = this.controls.getElements();
-				this.buttons.forEach(function(w){ this.map[w.name] = w}, this);
+				log('BUTTONS', this.buttons, this.controls);
+				this.buttons.forEach(function(w){ this.map[w.controlType] = w; }, this);
 			}
 
 			this.init();
@@ -83,8 +86,7 @@ define([
 				console.error('Controller must be associated with a Video and a Controlbar.');
 				return;
 			}
-			if(this.inited) return;
-			this.inited = 1;
+			if(this.inited) { return; } this.inited = 1;
 
 			this.parentNode = /*isMobile ? window : */this.controls.domNode.parentNode;
 
@@ -92,6 +94,9 @@ define([
 
 			if(this.map.Play){
 				this.on(this.map.Play, 'onPlay', this.video, 'play');
+				this.on(this.map.Play, 'onPlay', function(){
+					log('*PLAY*');
+				});
 				this.on(this.map.Play, 'onPause', this.video, 'pause');
 				this.on(this.video, 'onPlay', this.map.Play, 'showPause');
 				this.on(this.video, 'onPause', this.map.Play, 'showPlay');
@@ -128,7 +133,7 @@ define([
 							node.requestFullscreen();
 						}
 
-					}
+					};
 				}else if(node.mozRequestFullScreen) {
 					on(document, 'mozfullscreenchange', this, 'onFullscreen');
 					this.fullscreen = function(){
@@ -137,7 +142,7 @@ define([
 						}else{
 							node.mozRequestFullScreen();
 						}
-					}
+					};
 				}else if(node.webkitRequestFullScreen){
 					on(document, 'webkitfullscreenchange', this, 'onFullscreen');
 					this.fullscreen = function(){
@@ -146,7 +151,7 @@ define([
 						}else{
 							node.webkitRequestFullScreen();
 						}
-					}
+					};
 				}
 
 				if(!!this.fullscreen){
@@ -187,18 +192,18 @@ define([
 		},
 
 		hideComponents: function(){
-			if(this.video) this.video.hide();
-			if(this.slideshow) this.slideshow.hide();
-			if(this.vtour) this.vtour.hide();
-			if(this.preview) this.preview.hide();
-			if(this.screenButton) this.screenButton.hide();
+			if(this.video) { this.video.hide(); }
+			if(this.slideshow) { this.slideshow.hide(); }
+			if(this.vtour) { this.vtour.hide(); }
+			if(this.preview) { this.preview.hide(); }
+			if(this.screenButton) { this.screenButton.hide(); }
 		},
 
 		showVideo: function(){
 			this.hideComponents();
 			this.video.show();
-			if(this.preview) this.preview.show();
-			if(this.screenButton) this.screenButton.show();
+			if(this.preview) { this.preview.show(); }
+			if(this.screenButton) { this.screenButton.show(); }
 		},
 		showVtour: function(){
 			log('Vtour click');
@@ -225,7 +230,7 @@ define([
 			log('resize:', box.w, box.h);
 			box.isFullscreen = this.isFullscreen;
 			this.displayElements.forEach(function(el){
-				el.resize && el.resize(box);
+				if(el.resize) { el.resize(box); }
 			}, this);
 			mobile.hideAddressBar();
 		},

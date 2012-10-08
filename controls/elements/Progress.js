@@ -9,8 +9,9 @@ define([
 
 	//var log = logger('PRG', 1);
 
-	return declare('dx-media.controls.elements.Progress', [_Slider], {
+	return declare(_Slider, {
 
+		controlType:'Progress',
 
 		postCreate: function(){
 			this.inherited(arguments);

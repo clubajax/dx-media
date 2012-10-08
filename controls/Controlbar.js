@@ -14,7 +14,7 @@ define([
 	//
 	var log = logger('CON', 0);
 
-	return declare('dx-media.controls.Controlbar', [Widget], {
+	return declare(Widget, {
 
 		templateStyle:'dxStyleIcon',
 		baseClass:'dxControlbar',
@@ -30,7 +30,7 @@ define([
 		gap:5,
 
 		postCreate: function(){
-			log('postCreate')
+
 		},
 
 		startup: function(){
@@ -45,6 +45,11 @@ define([
 
 		getElements: function(){
 			return this.elements;
+		},
+
+		addChild: function(widget, node){
+			this.elements.push(widget);
+			this.inherited(arguments);
 		},
 
 		addChildLeft: function(w){
@@ -70,11 +75,11 @@ define([
 		},
 
 		setFlex: function(){
-			this.flexSpace && this.flexSpace.setMargins(this._lftMargin, this._rgtMargin);
+			if(this.flexSpace) {this.flexSpace.setMargins(this._lftMargin, this._rgtMargin);}
 		},
 
 		register: function(w){
-			w.name = lang.last(w.declaredClass.split('.'));
+			//w.name = lang.last(w.declaredClass.split('.'));
 			log('register', w.name);
 			var widget = w; // scoped
 			this.elements.push(w);

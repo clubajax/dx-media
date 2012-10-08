@@ -9,10 +9,11 @@ define([
 
 	var log = logger('PHO', 1);
 
-	return declare('dx-media.controls.elements.Slideshow', [_Button], {
+	return declare(_Button, {
 
 		buttonClass:'dxIcon dxSlideshowBtn',
-		radioGroup:'playerViews'
+		radioGroup:'playerViews',
+		controlType:'Slideshow'
 	});
 
 });

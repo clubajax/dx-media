@@ -9,12 +9,11 @@ define([
 
 	var log = logger('FBK', 1);
 
-	return declare('dx-media.controls.elements.Facebook', [_Button], {
-
-		align:'right',
+	return declare(_Button, {
 
 		templateString:'<a href="${facebookUrl}" target="_BLANK" ><div class="dxIcon dxFacebookBtn" data-dojo-attach-event="onclick:onClick"></div></a>',
 		align:'right',
+		controlType:'Facebook',
 
 		postMixInProperties: function(){
 			var URL = 'http://www.facebook.com/sharer.php',

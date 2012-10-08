@@ -9,7 +9,9 @@ define([
 
 	var log = logger('VSL', 0);
 
-	return declare('dx-media.controls.elements.VolumeSlider', [_Slider], {
+	return declare(_Slider, {
+
+		controlType:'VolumeSlider',
 
 		postCreate: function(){
 			this.inherited(arguments);

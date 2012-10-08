@@ -9,11 +9,11 @@ define([
 
 	var log = logger('EMB', 1);
 
-	return declare('dx-media.controls.elements.Embed', [_Button], {
+	return declare(_Button, {
 
 		align:'right',
-		buttonClass:'dxIcon dxEmbedBtn'
-
+		buttonClass:'dxIcon dxEmbedBtn',
+		controlType:'Embed'
 	});
 
 });

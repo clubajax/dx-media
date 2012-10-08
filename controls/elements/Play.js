@@ -9,13 +9,14 @@ define([
 
 	var log = logger('PLY', 0);
 
-	return declare('dx-media.controls.elements.Play', [_Button], {
+	return declare(_Button, {
 
 		innerTemplate: '<div class="dxIconFx ${iconClass}" data-dojo-attach-point="iconNode" data-dojo-attach-event="click:_onClick"><div class="normal"></div><div class="hover"></div><div class="active"></div></div>',
 		buttonClass:'dxPlayBtn',
 		iconClass:'dxPlayIcon',
 		pauseClass:'dxPauseIcon',
 		playShowing:1,
+		controlType:'Play',
 
 
 		postCreate: function(){
@@ -33,7 +34,7 @@ define([
 		},
 
 		_onClick: function(){
-			log('_onClick')
+			log('_onClick');
 			if(this.playShowing){
 				this.onClick('play');
 				this.onPlay();

@@ -9,10 +9,11 @@ define([
 
 	var log = logger('BV', 1);
 
-	return declare('dx-media.controls.elements.Video', [_Button], {
+	return declare(_Button, {
 
 		buttonClass:'dxIcon dxVideoBtn',
-		radioGroup:'playerViews'
+		radioGroup:'playerViews',
+		controlType:'Video'
 	});
 
 });

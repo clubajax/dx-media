@@ -9,14 +9,15 @@ define([
 
 	var log = logger('DUR', 1);
 
-	return declare('dx-media.controls.elements.Duration', [_Base], {
+	return declare(_Base, {
 
 		templateString:'<div class="dxDuration">0:00</div>',
+		controlType:'Duration',
 
 		remaining: true,
 
 		postCreate: function(){
-			if(!this.remaining) this.onFrame = function(){}
+			if(!this.remaining) { this.onFrame = function(){}; }
 			this.inherited(arguments);
 		},
 

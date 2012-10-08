@@ -9,10 +9,11 @@ define([
 
 	var log = logger('TWI', 1);
 
-	return declare('dx-media.controls.elements.Twitter', [_Button], {
+	return declare(_Button, {
 
 		templateString:'<a href="${twitterUrl}" target="_BLANK" ><div class="dxIcon dxTwitterBtn" data-dojo-attach-event="onclick:onClick"></div></a>',
 		align:'right',
+		controlType:'Twitter',
 
 		postMixInProperties: function(){
 			var URL = 'http://twitter.com/home',

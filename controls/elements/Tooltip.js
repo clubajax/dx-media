@@ -15,27 +15,28 @@ define([
 	return declare('dx-media.controls.elements.Tooltip', [Widget], {
 
 		templateString:  '<div class="dxTooltip"></div>',
+		controlType:'Tooltip',
 
 		x:0,
 		y:0,
 		width:0,
 		height:0,
 
-		// child: Dijit constructor Class
-		// 		A widget to be added to the tooltip
+		//	child: Dijit constructor Class
+		//		A widget to be added to the tooltip
 		Child:null,
 
-		// child: Dijit constructor instance
-		// 		The widget that has been added to the tooltip
+		//	child: Dijit constructor instance
+		//		The widget that has been added to the tooltip
 		child:null,
 
-		// positionNode:DomNode
-		// 		The node the tooltip will be poiting to
+		//	positionNode:DomNode
+		//		The node the tooltip will be poiting to
 		positionNode:null,
 
-		// align: String
-		// 		options: left, center, right
-		// 		puts tip in position of align
+		//	align: String
+		//		options: left, center, right
+		//		puts tip in position of align
 		align:'left',
 
 		text:"", // not implemented
@@ -56,7 +57,7 @@ define([
 				this.node = dom('div', 'dxTooltipBubble', this.domNode);
 				this.tip = dom('div', 'dxTooltipTip', this.node);
 			}
-			if(!this.domNode.parentNode) document.body.appendChild(this.domNode);
+			if(!this.domNode.parentNode) { document.body.appendChild(this.domNode); }
 			this.render();
 			if(this.Child){
 				this.containerNode = dom('div', 'dxTooltipContainer', this.domNode);
@@ -88,7 +89,7 @@ define([
 		},
 
 		render: function(){
-			if(!this.useCanvas) return this.renderDom();
+			if(!this.useCanvas) { return this.renderDom(); }
 			var ctx = this.canvas.getContext('2d');
 
 			var x = 5, y = 0, r = 3, w = this.width, h = this.height;

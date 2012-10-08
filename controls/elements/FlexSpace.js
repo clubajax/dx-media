@@ -10,15 +10,16 @@ define([
 
 	var log = logger('FXS', 1);
 
-	return declare('dx-media.controls.elements.FlexSpace', [_WidgetBase, _TemplatedMixin], {
+	return declare([_WidgetBase, _TemplatedMixin], {
 
 		templateString:'<div class="dxFlexSpace"><div class="" data-dojo-attach-point="containerNode"></div></div>',
+		controlType:'FlexSpace',
 
 		postCreate: function(){
 			this.getParent().addFlexSpace(this);
 		},
 		setMargins: function(lft, rgt){
-			log('setMargins', lft, rgt)
+			log('setMargins', lft, rgt);
 			dom.style(this.domNode, {
 				marginLeft:lft+'px',
 				marginRight:rgt+'px'

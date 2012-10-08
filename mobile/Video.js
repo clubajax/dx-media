@@ -14,7 +14,7 @@ define([
 	//		devices.
 	//		This is also the Base Class for the other Video renderers.
 	//
-	var log = logger('MOV', 1);
+	var log = logger('MOV', 0);
 
 	var
 		HTML5TYPES = {

@@ -9,9 +9,10 @@ define([
 
 	//var log = logger('STS', 1);
 
-	return declare('dx-media.controls.elements.Time', [_Base], {
+	return declare(_Base, {
 
 		templateString:'<div class="dxTime">0:00</div>',
+		controlType:'Time',
 
 		update: function(meta){
 			this.domNode.innerHTML = lang.timeCode(meta.time, 'mm_ss');
