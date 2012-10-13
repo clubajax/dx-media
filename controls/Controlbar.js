@@ -37,7 +37,7 @@ define([
 			log('startup');
 		},
 
-		onClick: function(/*Dijit*/widget){
+		onClick: function(event){
 			//	summary:
 			//		Fires when one of the control bar buttons has been clicked
 			//log('clicked:', widget.name);
@@ -83,9 +83,11 @@ define([
 			log('register', w.name);
 			var widget = w; // scoped
 			this.elements.push(w);
-			on(w, 'onClick', this, function(){
+			on(w, 'click', this, function(event){
 				//log('click', widget.name);
-				this.onClick(widget);
+				event.widget = widget;
+				this.onClick(event);
+				this.emit('click', event);
 			});
 		}
 	});

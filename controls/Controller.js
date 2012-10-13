@@ -36,10 +36,7 @@ define([
 		postCreate: function(){
 
 			this.displayElements = [];
-
-
-
-			this.id = lang.uid('VideoControl');
+			//this.id = lang.uid('VideoControl');
 			timer(this, 'startup', 30);
 		},
 
@@ -156,7 +153,7 @@ define([
 
 				if(!!this.fullscreen){
 					this.video.removeFullscreen();
-					this.on(this.map.Fullscreen, 'onClick', this, function(){
+					this.on(this.map.Fullscreen, 'click', this, function(){
 						log('------------------------------- Fullscreen', this.video.renderer);
 						this.fullscreen();
 
@@ -167,7 +164,7 @@ define([
 			}
 
 			if(this.screenButton){
-				this.on(this.screenButton, 'onClick', this.video, 'play');
+				this.on(this.screenButton, 'click', this.video, 'play');
 				this.on(this.video, 'onPlay', this.screenButton, 'hide');
 			}
 
@@ -178,14 +175,14 @@ define([
 
 			// These are buttons, not components
 			if(this.map.Video){
-				this.on(this.map.Video, 'onClick', this, 'showVideo');
+				this.on(this.map.Video, 'click', this, 'showVideo');
 			}
 			if(this.map.Slideshow){
 
-				this.on(this.map.Slideshow, 'onClick', this, 'showSlideshow');
+				this.on(this.map.Slideshow, 'click', this, 'showSlideshow');
 			}
 			if(this.map.Vtour){
-				this.on(this.map.Vtour, 'onClick', this, 'showVtour');
+				this.on(this.map.Vtour, 'click', this, 'showVtour');
 			}
 
 			log('mapped');

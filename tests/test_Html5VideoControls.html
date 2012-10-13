@@ -1,4 +1,4 @@
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 5//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<!DOCTYPE HTML>
 <html lang="en">
 <head>
     <title>Test dx-media HTML5 Video Controls</title>
@@ -20,7 +20,7 @@
 			], function(parser, Video){
 
 			parser.parse();
-
+return
 			new Video({
 				width:640, height:360, controls:true, autoplay:true,
 				src:'./media/video/SightAndSound.webm'
@@ -33,12 +33,12 @@
 	<div class='row'>
 		<div class='pWrap'>
 			<label>Markup Player</label>
-			<!--<div id="player">
+			<div id="player">
 				<video id="video" data-dojo-type="dx-media/Html5/Video" data-dojo-props="width:320, height:180">
-					<source src='./media/video/DojoMaster.mp4'></source>
-					<source src='./media/video/SightAndSound.webm'></source>
+					<source src='./media/video/Dojo.mp4'></source>
+					<source src='./media/video/Dojo.webm'></source>
 				</video>
-				<div id='preview' data-dojo-type="dx-media/Html5/Preview" data-dojo-props="src:'media/images/SightAndSound.jpg'"></div>
+				<div id='preview' data-dojo-type="dx-media/Html5/Preview" data-dojo-props="src:'media/images/Dojo.png'"></div>
 				<div id='screenButton' data-dojo-type="dx-media/controls/elements/ScreenPlayButton"></div>
 				<div id="controls" data-dojo-type="dx-media/controls/Controlbar" data-dojo-props="width:640, height:360">
 					<div data-dojo-type="dx-media/controls/elements/Play"></div>
@@ -52,7 +52,7 @@
 					<div data-dojo-type="dx-media/controls/elements/Twitter"></div>
 				</div>
 				<div data-dojo-type="dx-media/controls/Controller" data-dojo-props="controls:'controls',video:'video',preview:'preview',screenButton:'screenButton'"></div>
-			</div>-->
+			</div>
 		</div>
 		<div class='pWrap2'>
 			<label>Programmatic Player</label>

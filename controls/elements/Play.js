@@ -33,27 +33,26 @@ define([
 			this.playShowing = 0;
 		},
 
-		_onClick: function(){
+		_onClick: function(event){
 			log('_onClick');
 			if(this.playShowing){
-				this.onClick('play');
-				this.onPlay();
+				event.controlType = 'play';
+				this.onClick(event);
+				this.onPlay(event);
 			}else{
-				this.onClick('pause');
-				this.onPause();
+				event.controlType = 'pause';
+				this.onClick(event);
+				this.onPause(event);
 			}
 		},
 
-		onPlay: function(){
+		onPlay: function(event){
 			log('onPlay');
+			this.emit('play', event);
 		},
 
-		onPause: function(){
-
-		},
-
-		onClick: function(/*String*/playOrPause){
-
+		onPause: function(event){
+			this.emit('pause', event);
 		}
 	});
 });

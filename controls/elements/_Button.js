@@ -12,15 +12,15 @@ define([
 	var _groups = {};
 	var _widgets = {};
 	var addRadio = function(w){
-		if(!_groups[w.radioGroup]) _groups[w.radioGroup] = {};
+		if(!_groups[w.radioGroup]) { _groups[w.radioGroup] = {}; }
 		var name = string.last(w.declaredClass);
 		_groups[w.radioGroup][name] = w;
 		_widgets[name] = w;
-	}
+	};
 	topic.sub('/dx/button/on/select', function(w){
-		if(!_groups) return;
+		if(!_groups) { return; }
 		var g = _groups[w.radioGroup];
-		for(var nm in g) g[nm].select(g[nm].id == w.id);
+		for(var nm in g) { g[nm].select(g[nm].id == w.id); }
 	});
 
 
@@ -28,8 +28,8 @@ define([
 
 		templateString:'<div class="dxButton ${buttonClass}" data-dojo-attach-event="onclick:onClick">${innerTemplate}</div>',
 		innerTemplate:'',
-		buttonClass:'',		// set by child class
-		templateStyle:'', 	// retrieved from Controls
+		buttonClass:'', // set by child class
+		templateStyle:'', // retrieved from Controls
 		radioGroup:'',
 
 		postMixInProperties: function(){
@@ -47,17 +47,18 @@ define([
 
 		startup: function(){
 			var p = this.getParent();
-			if(p) this.templateStyle = p.templateStyle;
+			if(p) { this.templateStyle = p.templateStyle; }
 			this.inherited(arguments);
 		},
 
 		select: function(/*Boolean?*/selected){
-			if(selected === undefined) selected = true;
+			if(selected === undefined) { selected = true; }
 			dom.css(this.domNode, 'dxSelected', selected);
 		},
 
-		onClick: function(){
+		onClick: function(event){
 			// overwrite or connect to me!
+			this.emit('click', event);
 		}
 	});
 
