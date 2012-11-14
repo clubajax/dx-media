@@ -13,7 +13,7 @@ define([
 	//
 	var log = logger('SPB', 1);
 
-	return declare(Widget, {
+	return declare('dx-media.controls.elements.ScreenPlayButton', Widget, {
 
 		templateString:'<div class="dxScreenPlayButton dxMuted"></div>',
 		controlType:'ScreenPlayButton',

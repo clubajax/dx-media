@@ -9,7 +9,7 @@ define([
 
 	var log = logger('DUR', 1);
 
-	return declare(_Base, {
+	return declare('dx-media.controls.elements.Duration', _Base, {
 
 		templateString:'<div class="dxDuration">0:00</div>',
 		controlType:'Duration',

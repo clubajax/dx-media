@@ -182,7 +182,7 @@ define([
 		renderer:'html5',
 
 		constructor: function(/*Object*/options, /*DOMNode*/node){
-			log('MOBILE VIDEO CONSTR', options, node);
+			console.log('MOBILE VIDEO CONSTR', options, node);
 
 			// need to check if this is parent and if so, call:
 			this.prepareVideoAttributes(options, node);
@@ -192,7 +192,7 @@ define([
 			// A properly formed video tag works fine out of the gate.
 			log('prepareVideoAttributes', node, options, this.renderer);
 
-			console.log('this.sources ', this.sources );
+			console.log('this.sources ', this.id, this.sources );
 
 			if(node || options){
 				this.sources = getSources(node, options);
@@ -215,13 +215,14 @@ define([
 				}
 			}
 			if(this.width){
-				this.attributes = ['width="'+this.width+'"', 'height="'+this.height+'"'];
+				//this.attributes = ['width="'+this.width+'"', 'height="'+this.height+'"'];
 			}
+
+			// this.attributes set by extending classes
 		},
 
 		postMixInProperties: function(){
-			//log('MOBILE VIDEO postMixInProperties');
-			//this.prepareVideoAttributes(options, node);
+			log('src:', this.src);
 		},
 
 		postCreate: function(){
@@ -245,24 +246,21 @@ define([
 			}
 
 			if(this.src){
-			on(this.domNode, "play", this, function(){
-				playing = 1;
-				this.onPlay();
-			});
-			on(this.domNode, "pause", this, function(){
-				playing = 0;
-				this.onPause(this.domNode);
-				this.onStop(this.domNode);
-			});
-			on(this.domNode, "ended", this, function(){
-				playing = 0;
-				this.onComplete(this.domNode);
-				this.onStop(this.domNode);
-			});
+				on(this.domNode, "play", this, function(){
+					playing = 1;
+					this.emit('play', this.domNode);
+				});
+				on(this.domNode, "pause", this, function(){
+					playing = 0;
+					this.emit('pause', this.domNode);
+					this.emit('stop', this.domNode);
+				});
+				on(this.domNode, "ended", this, function(){
+					playing = 0;
+					this.emit('complete', this.domNode);
+					this.emit('stop', this.domNode);
+				});
 			}
-
-			var box = dom.box(window);
-			log('window size:', box.w, box.h);
 
 		},
 
@@ -370,8 +368,8 @@ define([
 
 			this.centerVideo();
 
-			log('resize!', box);
-			this.onResize(box);
+			// causes a loop in Chrome - do I even need this?
+			//this.emit('resize', box);
 		},
 
 
@@ -480,28 +478,28 @@ define([
 			this.width = w;
 			this.height = h;
 			this.imageAspect = w / h;
-		},
+		}/*,
 
-		onLoad: function(/* Object */ Video){
+		onLoad: function( Video){
 			// summary:
 			//		Fired when the player has loaded
 			//		NOT when the video has loaded
 			//
 		},
 
-		onProgress: function(/* Object */meta){
+		onProgress: function(meta){
 			// summary:
 			//		Fired on each new update (or frame, or tick) of the video.
 			//		Meta data contains percentage
 		},
 
-		onDownload: function(/* Float */percent){
+		onDownload: function(percent){
 			// summary:
 			//		Fires the amount of that the media has been
 			//		downloaded. Number, 0-1
 		},
 
-		onClick: function(/* Object */ evt){
+		onClick: function( evt){
 			// summary:
 			//		TODO: Return x/y of click
 			//		Fires when the player is clicked
@@ -510,14 +508,14 @@ define([
 			//		window.
 		},
 
-		onPreMeta: function(/*Object*/meta){
+		onPreMeta: function(meta){
 			//	summary:
 			//		Fires when the meta data information about the video is
 			//		ready, but *before* onMeta fires. This is used for video
 			//		ads.
 		},
 
-		onMeta: function(/*Object*/meta){
+		onMeta: function(meta){
 			//	summary:
 			//		Fires when the meta data information about the video is
 			//		received. Some renderers will have different information
@@ -540,7 +538,7 @@ define([
 			//				Actual (not displayed) height of the video
 		},
 
-		onTime: function(/* Float */ time){
+		onTime: function(time){
 			// summary:
 			//		The position of the playhead in seconds
 		},
@@ -550,56 +548,56 @@ define([
 			//		Fires when the video is restarted after completion.
 		},
 
-		onStart: function(/* Object */ meta){
+		onStart: function( meta){
 			// summary:
 			//		Fires when video starts
 		},
 
-		onPlay: function(/* Object */ meta){
+		onPlay: function( meta){
 			// summary:
 			//		Fires when video starts or resumes
 		},
 
-		onPause: function(/* Object */ meta){
+		onPause: function( meta){
 			// summary:
 			//		Fires when video stops
 		},
 
-		onSeek: function(/* Object */ meta){
+		onSeek: function( meta){
 			// summary:
 			//		Fires at the start, during, and the end of dragging the
 			//		progress handle.
 		},
 
-		onStop: function(/* Object */ meta){
+		onStop: function( meta){
 			// summary:
 			//		Fired on pause OR end. (I think I use this for mobile only)
 		},
 
-		onComplete: function(/* Object */ meta){
+		onComplete: function( meta){
 			// summary:
 			//		Fires on completion of video
 		},
 
-		onBuffer: function(/* Boolean */ isBuffering){
+		onBuffer: function(isBuffering){
 			// summary:
 			//		Fires when buffering or when buffering
 			//		has finished. (not a garaunteed event to fire in all
 			//		renderers)
 		},
 
-		onError: function(/* Object */ errorObject){
+		onError: function( errorObject){
 			// summary:
 			//		Fired when the player encounters an error
 		},
 
-		onStatus: function(/* String */status){
+		onStatus: function(status){
 			// summary:
 			//		The status of the video from the SWF
 			//		playing, stopped, bufering, etc.
 		},
 
-		onFullscreen: function(/* Boolean */ isFullscreen){
+		onFullscreen: function(isFullscreen){
 			// summary:
 			//		Fired when video toggles fullscreen
 		},
@@ -612,7 +610,7 @@ define([
 		onResize: function(){
 			// summary:
 			//		Fired when video resizes, but not when it goes fullscreen
-		}
+		}*/
 	});
 
 	Mobile.determineSource = determineSource;

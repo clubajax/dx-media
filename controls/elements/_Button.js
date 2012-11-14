@@ -49,6 +49,7 @@ define([
 			var p = this.getParent();
 			if(p) { this.templateStyle = p.templateStyle; }
 			this.inherited(arguments);
+			this.startup = function(){};
 		},
 
 		select: function(/*Boolean?*/selected){

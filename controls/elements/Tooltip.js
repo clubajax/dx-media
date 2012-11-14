@@ -8,7 +8,7 @@ define([
 	"dx-timer/timer"
 ], function(declare, Widget, has, dom, lang, logger){
 
-	var log = logger('TIP', 0);
+	var log = logger('TIP', 1);
 
 	var isIE = has('ie') < 9;
 
@@ -72,6 +72,7 @@ define([
 				var pos = dom.pos(this.positionNode);
 				x = pos.x + pos.w/2 - tipx;
 				y = pos.y - 5 - tipy - this.height;
+				log('positionNode', x, y);
 			}else{
 				x = this.x;
 				y = this.y;
@@ -81,11 +82,14 @@ define([
 				top:y+'px',
 				left:x+'px'
 			});
+
+			log('POS', x, y);
 		},
 
 		setSize: function(marginLeft, marginBottom){
 			this.canvas.width = this.width + 5 + (marginLeft || 0);
 			this.canvas.height = this.height + (marginBottom || 0);
+			log('setSize', this.canvas.width, this.canvas.height);
 		},
 
 		render: function(){

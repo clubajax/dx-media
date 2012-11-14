@@ -7,9 +7,7 @@ define([
 	"dx-timer/timer"
 ], function(declare, _Slider, dom, lang, logger){
 
-	//var log = logger('PRG', 1);
-
-	return declare(_Slider, {
+	return declare('dx-media.controls.elements.Progress', _Slider, {
 
 		controlType:'Progress',
 

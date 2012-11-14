@@ -49,7 +49,7 @@ define([
 
 		onMeta: function(meta, ref){
 			// [private]
-			log('MEATA!')
+			log('MEATA!');
 			pub('onMeta', ref, meta);
 		},
 		onClick: function(ref){
@@ -102,11 +102,11 @@ define([
 			if(!this.swf() && !this._timer){
 				log('create timer');
 				this._timerTries--;
-				log('no swf for timer - retry ', this._timerTries, 'times. swf:', this.swf(), 'timer:', this._timer)
+				log('no swf for timer - retry ', this._timerTries, 'times. swf:', this.swf(), 'timer:', this._timer);
 				this.tmr = {
 					pause:function(){},
 					resume:function(){}
-				}
+				};
 				if(this._timerTries > 0){
 					b.timer(this.setTimer.bind(this), 200);
 				}
@@ -117,31 +117,28 @@ define([
 			this.id = lang.uid('FV');
 			this.tmr = timer(this, function(evt){
 				try{
-				var t = this.swf().getTime() || 0;
-				var p = t / this.duration;
-				this._timer = true;
-				this.time = t;
-				//console.log("    time", t)
+					var t = this.swf().getTime() || 0;
+					this._timer = true;
+					this.time = t;
 
-				this.onProgress(this.getMeta());
+					this.onProgress(this.getMeta());
 
-				// use a large enough number here:
-				// .5 is greater than the 300ms timer, AND
-				// it allows enough time for onComplete to
-				// fire BEFORE pause - for reporting.
-				if(!this.seeking && !this.complete && t > this.duration - .5){
-					this.complete = true;
-					this.onComplete();
-					timer(this, function(){
-						log('onComplete pause:', this.tmr.pause());
-					}, 300);
-				}
+					// use a large enough number here:
+					// .5 is greater than the 300ms timer, AND
+					// it allows enough time for onComplete to
+					// fire BEFORE pause - for reporting.
+					if(!this.seeking && !this.complete && t > this.duration - 0.5){
+						this.complete = true;
+						this.onComplete();
+						timer(this, function(){
+							log('onComplete pause:', this.tmr.pause());
+						}, 300);
+					}
 
 				}catch(e){console.error('set time err', this.id, evt.id, evt, e); this.tmr.stop(); }
 
 
 			}, Infinity, 300, 'debugX', {id:'FlashTimer.'+this.id});
-			//this.tmr.pause();
 		},
 
 		_onPreload: function(){

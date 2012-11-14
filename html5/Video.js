@@ -16,7 +16,7 @@ define([
 	//		methods and events from mobile/Video. See that Class for API
 	//		summaries.
 	//
-	var log = logger('H5V', 1);
+	var log = logger('H5V', 0);
 
 
 	return declare('dx-media.html5.Video', [Mobile], {
@@ -28,72 +28,99 @@ define([
 		preload:"auto",
 		autoplay:false,
 
-		initialVolume:.7,
+		initialVolume:0.7,
 
 		renderer:'html5',
 
 		constructor: function(options, node){
-			log('HTML5 VIDEO CONSTR');
-			//this.prepareVideoAttributes(options, node);
+
 		},
 
+
+
 		postMixInProperties: function(){
-
 			this.inherited(arguments);
-
-			if(typeof this.attributes == 'string') { this.attributes = []; }
-			var options = {
-				width:this.width,
-				height:this.height,
-				autobuffer:this.autobuffer,
-				buffer:this.buffer,
-				preload:this.preload
-			};
-			if(this.src) { options.src = this.src; }
-			if(this.autoplay) { options.autoplay = true; }
-
-			for(var nm in options){
-				this.attributes.push(nm+'="'+options[nm]+'"');
-			}
+			this.setupAttributes();
 		},
 
 		postCreate: function(){
 			if(!this.src){
+				log('NO SRC');
 				return;
 			}
+			// do not use this.inherited(arguments);
+
 			// FIXES IPAD BUG
 			// iPad has trouble determining which source to play
 			// so we just specifically load it
 			if(has('ipad')) { this._setVideo(p); }
 
-			this.volume(this.initialVolume);
 			this.setupEvents();
-			//timer(this, 'connectEvents', 1)
-			log('video ready.');
+
+			// because I hate calling startup manually
+			timer(this, 'startup', 1);
 		},
 
+		startup: function(){
+			if(this.started) { return; }
+			this.started = 1;
+			this.inherited(arguments);
+			this.volume(this.initialVolume);
+		},
+
+		setupAttributes: function(){
+			if(typeof this.attributes == 'string') { this.attributes = []; }
+			var options = {
+				width:this.width || '100%',
+				height:this.height || '100%',
+				autobuffer:this.autobuffer,
+				buffer:this.buffer,
+				preload:this.preload
+			};
+			if(this.src) {
+				//this.__tempSrc = this.src;
+				//this.src = null;
+
+			}
+			if(this.autoplay) { options.autoplay = "true"; }
+
+			for(var nm in options){
+				this.attributes.push(nm+'='+options[nm]);
+			}
+
+			this.attributes = this.attributes.join(' ');
+		},
 
 
 		setupEvents: function(){
 			if(has('iphone')) { return; }
 
-			var meta, ready;
+			var meta, ready, _isplaying = 0;
 
 			this.connection = on.multi(this.domNode, {
-				"play": "onPlay",
-				"pause": "onPause",
+				"play": function(){
+					if(!_isplaying){
+						_isplaying = 1;
+						this.emit('play', this.getMeta());
+					}
+				},
+				"pause": function(){
+					if(_isplaying){
+						_isplaying = 0;
+						this.emit('pause', this.getMeta());
+					}
+				},
 				"progress": "_onDownload",
 				"error": "onError",
 				"timeupdate": "_onProgress",
 				"ended": function(){
 					this.complete = true;
-					this.onPause();
+					this.emit('pause', this.getMeta());
 					this.hasPlayed = false;
-					this.onComplete(this.getMeta());
+					this.emit('complete', this.getMeta());
 				},
 				"seeked":"onSeeked",
 				 "loadedmetadata": function(evt){
-					log("   ---------- > meta pre event:", evt);
 					meta = evt.target;
 					meta.isAd = this.isAd;
 					if(ready) { this._onmeta(meta); }
@@ -111,26 +138,21 @@ define([
 				}, this);
 			}
 
-			tmr = timer(this, function(){
+			var tmr = timer(this, function(){
 				if (this.domNode.readyState > 0) {
 					ready = true;
 					tmr.remove();
 					if(meta) { this._onmeta(meta); }
 				}
-			},10000, 200);
+			},2000, 200);
 		},
 
-		onSeeked: function(){
-			// when does this actually fire?
-			log(' --------------------- onSeeked')
-			if(this.complete && !this.domNode.paused){
-				this.onRestart();
-			}
-		},
+
 
 		_onmeta: function(m){
+			//log('____________________________onmeta', this.id);
 			// *** on iPad won't fire until PLAY **************************
-			this._metaHandle && this._metaHandle.remove();
+			if(this._metaHandle) { this._metaHandle.remove(); }
 			this.meta = lang.mix(this.meta || {}, m);
 			this.duration = m.duration;
 			if(m.videoWidth){
@@ -142,17 +164,30 @@ define([
 
 			if(!this.premetaFired){
 				this.premetaFired = 1;
-				this.onPreMeta(m);
+				this.emit('premeta', this.getMeta());
 			}
 
 			this._metaHandle = timer(this, function(){
-				this.onMeta(this.getMeta());
+				log('fire meta');
+				//this.onMeta(this.getMeta());
+				this.emit('meta', this.getMeta());
+				if(this.autoplay){
+					//this.play();
+				}
 			}, 30);
+		},
+
+		onSeeked: function(){
+			// when does this actually fire?
+			log(' --------------------- onSeeked');
+			if(this.complete && !this.domNode.paused){
+				this.onRestart();
+			}
 		},
 
 		_onProgress: function(){
 			var m = this.getMeta();
-			if(m.duration) this.onProgress(m);
+			if(m.duration) { this.emit('progress', m); }
 		},
 
 
@@ -171,11 +206,12 @@ define([
 				p = ((v.buffered.end(0) / v.duration));
 			}
 			// TODO: meta?
-			this.onDownload({p:p});
+			this.emit('download', this.getMeta());
 		},
 
 		// TODO:
 		// connecting events needs to be a common signature
+		// and maybe tie into video.set('disabled');
 		disconnectEvents: function(){
 			this.disWasPlaying = this.isPlaying();
 			this.pause();
@@ -192,8 +228,9 @@ define([
 		},
 
 		_setVideo: function(p){
+			log("_setVideo......", p);
 			var path = p.path || p;
-			if(!path) return;
+			if(!path) { return; }
 			log("Video._setVideo......", path);
 			timer(this, function(){
 				this.complete = false;
@@ -216,8 +253,10 @@ define([
 		},
 
 		reload: function(path){
+			// TODO:
+			// Does this work with emit events?
 			on.once(this, "onMeta", this, function(){
-				this.domNode.currentTime = .1
+				this.domNode.currentTime = 0.1;
 				this.domNode.play();
 			});
 			this.pause();
@@ -235,7 +274,7 @@ define([
 				// without the pause, Safari crashes:
 				timer(this, "onPlay", 1);
 				timer(this, function(){
-					this.domNode.currentTime = .1;
+					this.domNode.currentTime = 0.1;
 					this.domNode.play();
 				}, 260);
 				this.onRestart(this.getMeta());
@@ -250,7 +289,7 @@ define([
 				duration:this.duration,
 				remaining:Math.max(0, this.duration-this.domNode.currentTime),
 				isAd:this.isAd
-			}
+			};
 		},
 
 		onError: function(evt){
@@ -262,7 +301,7 @@ define([
 
 
 		play: function(){
-			log('play me');
+			log('play me', this.domNode.src);
 			this.domNode.play();
 		},
 
@@ -271,18 +310,24 @@ define([
 			this.domNode.pause();
 		},
 
-		seek: function(cmd){
+		seek: function(e){
+
+			if(!e){
+				this.domNode.currentTime = 0;
+				return;
+			}
+
 			var diff = 0;
-			if(cmd === "start"){
+			if(e.mouse.down){
 				this.wasPlaying = this.isPlaying();
 				//console.warn('SEEK START, [played:', this.hasPlayed, 'wasPlaying', wasPlaying);
 				if(!this.hasPlayed){
-					// need to do something...
+					// need to do something...?
 					//topic.pub("/video/on/play", this.meta);
 				}
 				this.timeWas = this.domNode.currentTime;
 				this.pause();
-			}else if(cmd === "end"){
+			}else if(e.mouse.up){
 				if(this.wasPlaying){
 					this.play();
 				}else{
@@ -290,21 +335,28 @@ define([
 				}
 				diff = this.domNode.currentTime - this.timeWas;
 			}else{
-				this.domNode.currentTime = this.duration * cmd;
+				this.domNode.currentTime = this.duration * e.mouse.px;
 			}
 
 			var m = this.getMeta();
-			m.type = cmd || 'seeking';
+			m.type = 'seeking';
 			m.change = diff;
-			this.onSeek(m);
+			this.emit('seek', m);
 		},
 
 		volume: function(p){
-			this.domNode.volume = p;
+			// summary
+			//		gets and sets volume
+			//		Not using typical widget.get/set since it's the only case
+			//		necessary.
+			if(p !== undefined){
+				this.domNode.volume = p;
+			}
+			return this.domNode.volume;
 		},
 
 		isPlaying: function(){
-			log('isPlaying, complete:', this.complete, 'paused:', this.domNode.paused)
+			log('isPlaying, complete:', this.complete, 'paused:', this.domNode.paused);
 			return this.complete ? false : !this.domNode.paused;
 		},
 
@@ -324,10 +376,10 @@ define([
 				this.restart();
 
 			}else if(!this.domNode.src){
-				log('setting for the first time...')
+				log('setting for the first time...');
 				this.domNode.src = path;
 				// check autoplay? What if in a playlist?
-				if(this.autoplay) timer(this, 'play', 200, {debug:1});
+				if(this.autoplay) { timer(this, 'play', 200, {debug:1}); }
 
 			}else{
 				log('set new video...');

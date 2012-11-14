@@ -7,9 +7,7 @@ define([
 	"dx-timer/timer"
 ], function(declare, _Button, dom, lang, logger){
 
-	var log = logger('EMB', 1);
-
-	return declare(_Button, {
+	return declare('dx-media.controls.elements.Embed', _Button, {
 
 		align:'right',
 		buttonClass:'dxIcon dxEmbedBtn',

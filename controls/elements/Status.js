@@ -11,7 +11,7 @@ define([
 
 	var log = logger('STS', 1);
 
-	return declare(Widget, {
+	return declare('dx-media.controls.elements.Status', Widget, {
 
 		templateString:'<div class="dxStatus"><div data-dojo-type="dx-media.controls.elements.Time"></div> / <div data-dojo-type="dx-media.controls.elements.Duration"></div></div>',
 		controlType:'Status',

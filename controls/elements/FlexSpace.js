@@ -1,16 +1,15 @@
 define([
 	"dojo/_base/declare",
-	"dijit/_WidgetBase",
-	"dijit/_TemplatedMixin",
+	"dx-alias/Widget",
 	"dx-alias/dom",
 	"dx-alias/lang",
 	"dx-alias/log",
 	"dx-timer/timer"
-], function(declare, _WidgetBase, _TemplatedMixin, dom, lang, logger){
+], function(declare, Widget, dom, lang, logger){
 
 	var log = logger('FXS', 1);
 
-	return declare([_WidgetBase, _TemplatedMixin], {
+	return declare('dx-media.controls.elements.FlexSpace', Widget, {
 
 		templateString:'<div class="dxFlexSpace"><div class="" data-dojo-attach-point="containerNode"></div></div>',
 		controlType:'FlexSpace',

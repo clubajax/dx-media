@@ -15,40 +15,6 @@
 		};
     </script>
     <script src="../../dojo/dojo.js"></script>
-	<script>
-		require([
-				"dojo/parser",
-				'dx-media/controls/Controlbar',
-				'dx-media/controls/elements/Play',
-				'dx-media/controls/elements/Fullscreen',
-				'dx-media/controls/elements/Volume',
-				'dx-media/controls/elements/Time',
-				'dx-media/controls/elements/Progress',
-				'dx-media/controls/elements/Duration',
-				'dx-media/controls/elements/Embed',
-				'dx-media/controls/elements/Facebook',
-				'dx-media/controls/elements/Twitter'
-			], function(parser, Controlbar, Play, Fullscreen, Volume, Time, Progress, Duration){
-
-			parser.parse();
-
-			console.info('---- controls 2 ----');
-
-			var controls = new Controlbar({width:640, height:30});
-			controls.addChildren([
-				new Play({}),
-				new Fullscreen({}),
-				new Volume({}),
-				new Time({}),
-				new Progress({width:100}),
-				new Duration({})
-			]);
-
-			document.getElementById('player2').appendChild(controls.domNode);
-
-		});
-
-	</script>
 </head>
 <body>
 	<h1>Test dx-media Controls</h1>
@@ -76,5 +42,38 @@
 			<div id='player2'></div>
 		</div>
 	</div>
+	<script>
+		require([
+				"dojo/parser",
+				'dx-media/controls/Controlbar',
+				'dx-media/controls/elements/Play',
+				'dx-media/controls/elements/Fullscreen',
+				'dx-media/controls/elements/Volume',
+				'dx-media/controls/elements/Time',
+				'dx-media/controls/elements/Progress',
+				'dx-media/controls/elements/Duration',
+				'dx-media/controls/elements/Embed',
+				'dx-media/controls/elements/Facebook',
+				'dx-media/controls/elements/Twitter'
+			], function(parser, Controlbar, Play, Fullscreen, Volume, Time, Progress, Duration){
+
+			parser.parse();
+
+			console.info('---- controls 2 ----');
+
+			var controls = new Controlbar({width:640, height:30, controls:[
+				Play,
+				Fullscreen,
+				Volume,
+				Time,
+				{Class:Progress, width:100},
+				Duration
+			]});
+
+			document.getElementById('player2').appendChild(controls.domNode);
+
+		});
+
+	</script>
 </body>
 </html>

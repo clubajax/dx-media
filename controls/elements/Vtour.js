@@ -9,7 +9,7 @@ define([
 
 	var log = logger('VTR', 1);
 
-	return declare(_Button, {
+	return declare('dx-media.controls.elements.Vtour', _Button, {
 
 		buttonClass:'dxIcon dxVtourBtn',
 		radioGroup:'playerViews',

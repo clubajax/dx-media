@@ -7,9 +7,9 @@ define([
 	"dx-timer/timer"
 ], function(declare, _Button, dom, lang, logger){
 
-	var log = logger('PLY', 0);
+	var log = logger('PLY', 1);
 
-	return declare(_Button, {
+	var exports = declare('dx-media.controls.elements.Play', _Button, {
 
 		innerTemplate: '<div class="dxIconFx ${iconClass}" data-dojo-attach-point="iconNode" data-dojo-attach-event="click:_onClick"><div class="normal"></div><div class="hover"></div><div class="active"></div></div>',
 		buttonClass:'dxPlayBtn',
@@ -24,11 +24,13 @@ define([
 		},
 
 		showPlay: function(){
+			log('showPLay');
 			dom.css.replace(this.iconNode, this.iconClass, this.pauseClass);
 			this.playShowing = 1;
 		},
 
 		showPause: function(){
+			log('showPause');
 			dom.css.replace(this.iconNode, this.pauseClass, this.iconClass);
 			this.playShowing = 0;
 		},
@@ -37,22 +39,13 @@ define([
 			log('_onClick');
 			if(this.playShowing){
 				event.controlType = 'play';
-				this.onClick(event);
-				this.onPlay(event);
+				this.emit('play', event);
 			}else{
 				event.controlType = 'pause';
-				this.onClick(event);
-				this.onPause(event);
+				this.emit('pause', event);
 			}
-		},
-
-		onPlay: function(event){
-			log('onPlay');
-			this.emit('play', event);
-		},
-
-		onPause: function(event){
-			this.emit('pause', event);
 		}
 	});
+
+	return exports;
 });

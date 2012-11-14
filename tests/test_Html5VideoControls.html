@@ -13,20 +13,7 @@
 		};
     </script>
     <script src="../../dojo/dojo.js"></script>
-	<script>
-		require([
-				"dojo/parser",
-				"dx-media/Html5/Video"
-			], function(parser, Video){
 
-			parser.parse();
-return
-			new Video({
-				width:640, height:360, controls:true, autoplay:true,
-				src:'./media/video/SightAndSound.webm'
-			}, 'player2');
-		});
-	</script>
 </head>
 <body>
 	<h1>Test dx-media HTML5 Video Controls</h1>
@@ -34,9 +21,9 @@ return
 		<div class='pWrap'>
 			<label>Markup Player</label>
 			<div id="player">
-				<video id="video" data-dojo-type="dx-media/Html5/Video" data-dojo-props="width:320, height:180">
-					<source src='./media/video/Dojo.mp4'></source>
-					<source src='./media/video/Dojo.webm'></source>
+				<video id="video" data-dojo-type="dx-media/Html5/Video" data-dojo-props="autoplay:true">
+					<source src='./media/video/Dojo_short.mp4'></source>
+					<source src='./media/video/Dojo_short.webm'></source>
 				</video>
 				<div id='preview' data-dojo-type="dx-media/Html5/Preview" data-dojo-props="src:'media/images/Dojo.png'"></div>
 				<div id='screenButton' data-dojo-type="dx-media/controls/elements/ScreenPlayButton"></div>
@@ -56,10 +43,62 @@ return
 		</div>
 		<div class='pWrap2'>
 			<label>Programmatic Player</label>
-			<div id='player2'>
-
-			</div>
+			<div id='player2'></div>
 		</div>
 	</div>
+	<script>
+		require([
+				'dojo/parser',
+				'dx-media/Html5/Video',
+				'dx-media/Html5/Preview',
+				'dx-media/controls/Controlbar',
+				'dx-media/controls/elements/Play',
+				'dx-media/controls/elements/Fullscreen',
+				'dx-media/controls/elements/Volume',
+				'dx-media/controls/elements/Time',
+				'dx-media/controls/elements/Progress',
+				'dx-media/controls/elements/Duration',
+				'dx-media/controls/elements/Embed',
+				'dx-media/controls/elements/Facebook',
+				'dx-media/controls/elements/Twitter',
+				'dx-media/controls/elements/ScreenPlayButton',
+				'dx-media/controls/Controller'
+			], function(parser, Video, Preview, Controlbar, Play, Fullscreen, Volume, Time, Progress, Duration, Embed, Facebook, Twitter, ScreenPlayButton, Controller){
+
+			parser.parse();
+
+			var video = new Video({
+				controls:false,
+				autoplay:false,
+				id:'programmatic',
+				sources:[
+					{
+						src:'./media/video/Dojo_short.mp4'
+					},
+					'./media/video/Dojo_short.webm'
+				]
+			});
+			document.getElementById('player2').appendChild(video.domNode);
+			var controls = new Controlbar({controls:[
+				Play,
+				Fullscreen,
+				Volume,
+				Time,
+				{Class:Progress, width:100},
+				Duration
+			]});
+			document.getElementById('player2').appendChild(controls.domNode);
+
+			var controller = new Controller({
+				video:video,
+				controls:controls/*,
+				preview:'preview',
+				screenButton:'screenButton'*/
+			});
+
+			controls.startup();
+			controller.startup();
+		});
+	</script>
 </body>
 </html>

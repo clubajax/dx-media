@@ -9,7 +9,7 @@ define([
 
 	var log = logger('PHO', 1);
 
-	return declare(_Button, {
+	return declare('dx-media.controls.elements.Slideshow', _Button, {
 
 		buttonClass:'dxIcon dxSlideshowBtn',
 		radioGroup:'playerViews',

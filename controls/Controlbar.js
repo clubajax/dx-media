@@ -12,7 +12,7 @@ define([
 	//	summary:
 	//		Media player container widget for controls (play button, etc).
 	//
-	var log = logger('CON', 0);
+	var log = logger('CON', 1);
 
 	return declare(Widget, {
 
@@ -20,6 +20,10 @@ define([
 		baseClass:'dxControlbar',
 
 		templateString:'<div class="${baseClass} ${templateStyle}"><div class="left" data-dojo-attach-point="containerNode"></div><div class="right" data-dojo-attach-point="containerRight"></div></div>',
+
+		//	controls:Array
+		//		An array of player button constructors to be instanciated
+		controls:null,
 
 		constructor: function(){
 			this.elements = [];
@@ -30,11 +34,18 @@ define([
 		gap:5,
 
 		postCreate: function(){
-
+			this.addControls(this.controls);
+			//timer(this, 'startup', 1);
 		},
 
 		startup: function(){
-			log('startup');
+			if(this._started){ return; }
+			this._started = 1;
+
+			var children = this.getElements();
+			for(var i=0; i<children.length; i++){
+				children[i].startup();
+			}
 		},
 
 		onClick: function(event){
@@ -48,15 +59,21 @@ define([
 		},
 
 		addChild: function(widget, node){
+			widget._added = 1;
+			switch(widget.align){
+				case 'right': return this.addChildRight(widget);
+				case 'left': return this.addChildLeft(widget);
+			}
 			this.elements.push(widget);
 			this.inherited(arguments);
+			return widget;
 		},
 
 		addChildLeft: function(w){
 			this.register(w);
 			this._lftMargin += dom.box(w.domNode).w + this.gap;
 			this.setFlex();
-			//log('addChildLeft')
+			return w;
 		},
 
 		addChildRight: function(w){
@@ -65,6 +82,7 @@ define([
 			this.register(w);
 			this._rgtMargin += dom.box(w.domNode).w + this.gap;
 			this.setFlex();
+			return w;
 		},
 
 		addFlexSpace: function(w){
@@ -79,7 +97,6 @@ define([
 		},
 
 		register: function(w){
-			//w.name = lang.last(w.declaredClass.split('.'));
 			log('register', w.name);
 			var widget = w; // scoped
 			this.elements.push(w);
@@ -89,6 +106,26 @@ define([
 				this.onClick(event);
 				this.emit('click', event);
 			});
+		},
+
+		addControls: function(controls){
+			if(controls){
+				var C, i;
+				for(i=0; i<controls.length; i++){
+					C = controls[i];
+					if(typeof C === 'function'){
+						// a constructor
+						this.addChild(new C());
+					}else if(C.Class){
+						// An object with a class constructor and properties to mix in
+						// FIXME: Is there a better convention? Like how Editor passes plugins?
+						this.addChild(new C.Class(C));
+					}else{
+						// an instanciated widget
+						this.addChild(C);
+					}
+				}
+			}
 		}
 	});
 

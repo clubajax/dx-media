@@ -9,7 +9,7 @@ define([
 
 	var log = logger('TWI', 1);
 
-	return declare(_Button, {
+	return declare('dx-media.controls.elements.Twitter', _Button, {
 
 		templateString:'<a href="${twitterUrl}" target="_BLANK" ><div class="dxIcon dxTwitterBtn" data-dojo-attach-event="onclick:onClick"></div></a>',
 		align:'right',

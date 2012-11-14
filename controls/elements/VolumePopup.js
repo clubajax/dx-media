@@ -9,7 +9,7 @@ define([
 
 	var log = logger('VP', 0);
 
-	return declare(Widget, {
+	return declare('dx-media.controls.elements.VolumePopup', Widget, {
 
 		templateString: '<div class=""></div>',
 		buttonClass:'dxVolumeBtn',

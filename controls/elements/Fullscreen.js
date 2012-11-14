@@ -10,7 +10,7 @@ define([
 
 	//var log = logger('PLY', 1);
 
-	return declare(_Button, {
+	return declare('dx-media.controls.elements.Fullscreen', _Button, {
 
 		innerTemplate: '<div class="dxIconFx ${iconClass}" data-dojo-attach-point="iconNode" data-dojo-attach-events="onClick:onClick"><div class="normal"></div><div class="hover"></div><div class="active"></div></div>',
 		buttonClass:'dxFullscreenBtn',

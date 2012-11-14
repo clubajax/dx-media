@@ -17,7 +17,7 @@ define([
 	//		Handle Slideshow and Vtour
 	//
 	//
-	var log = logger('VC', 1);
+	var log = logger('VC', 0);
 
 	var isMobile = has('mobile');
 
@@ -34,16 +34,16 @@ define([
 		isFullscreen:false,
 
 		postCreate: function(){
-
 			this.displayElements = [];
 			//this.id = lang.uid('VideoControl');
-			timer(this, 'startup', 30);
+			timer(this, 'startup', 1);
 		},
 
 		startup: function(){
-			if(this._started) { return; } this._started = 1;
-			this._connections = [];
+			if(this._started) { return; }
+			this._started = 1;
 
+			this._connections = [];
 			['controls', 'video', 'preview', 'screenButton', 'slideshow', 'vtour'].forEach(function(str){
 				this[str] = this.getObject(str);
 				log('   get', str, 'got', this[str]);
@@ -87,34 +87,32 @@ define([
 
 			this.parentNode = /*isMobile ? window : */this.controls.domNode.parentNode;
 
-			console.log('map', this.map);
-
 			if(this.map.Play){
-				this.on(this.map.Play, 'onPlay', this.video, 'play');
-				this.on(this.map.Play, 'onPlay', function(){
-					log('*PLAY*');
-				});
-				this.on(this.map.Play, 'onPause', this.video, 'pause');
-				this.on(this.video, 'onPlay', this.map.Play, 'showPause');
-				this.on(this.video, 'onPause', this.map.Play, 'showPlay');
+				this.video.on('onplay', this.map.Play, 'showPause');
+				this.video.on('onpause', this.map.Play, 'showPlay');
+				this.map.Play.on('onplay', this.video, 'play');
+				this.map.Play.on('onpause', this.video, 'pause');
 			}
 
 			if(this.map.Volume){
-				this.on(this.map.Volume, 'onUpdate', this.video, 'volume');
+				this.map.Volume.on('onupdate', this.video, 'volume');
 			}
 
 			if(this.map.Progress){
-				this.on(this.map.Progress, 'onUpdate', this.video, 'seek');
-				this.on(this.video, 'onProgress', this.map.Progress, 'update');
+				this.map.Progress.on('onupdate', this, function(evt){
+					this.video.seek(evt);
+				});
+					//this.video, 'seek');
+				this.video.on('onprogress', this.map.Progress, 'update');
 			}
 
 			if(this.map.Duration){
-				this.on(this.video, 'onMeta', this.map.Duration, 'update');
-				this.on(this.video, 'onProgress', this.map.Duration, 'update');
+				this.video.on('onmeta', this.map.Duration, 'update');
+				this.video.on('onprogress', this.map.Duration, 'update');
 			}
 
 			if(this.map.Time){
-				this.on(this.video, 'onProgress', this.map.Time, 'update');
+				this.video.on('onprogress', this.map.Time, 'update');
 			}
 
 			if(this.map.Fullscreen){
@@ -165,11 +163,11 @@ define([
 
 			if(this.screenButton){
 				this.on(this.screenButton, 'click', this.video, 'play');
-				this.on(this.video, 'onPlay', this.screenButton, 'hide');
+				this.video.on('onplay', this.screenButton, 'hide');
 			}
 
 			if(this.preview){
-				this.on(this.video, 'onPlay', this.preview, 'hide');
+				this.video.on('onplay', this.preview, 'hide');
 			}
 
 
@@ -189,7 +187,7 @@ define([
 		},
 
 		hideComponents: function(){
-			if(this.video) { this.video.hide(); }
+			//if(this.video) { this.video.hide(); }
 			if(this.slideshow) { this.slideshow.hide(); }
 			if(this.vtour) { this.vtour.hide(); }
 			if(this.preview) { this.preview.hide(); }
@@ -222,7 +220,7 @@ define([
 		},
 
 		resize: function(){
-
+			if(!this.parentNode){ return; }
 			var box = dom.box(this.parentNode);
 			log('resize:', box.w, box.h);
 			box.isFullscreen = this.isFullscreen;

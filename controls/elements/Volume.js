@@ -12,16 +12,16 @@ define([
 
 	var log = logger('VOL', 0);
 
-	return declare(_Button, {
+	return declare('dx-media.controls.elements.Volume', _Button, {
 
 		innerTemplate: '<div class="dxIconFx ${iconClass}" data-dojo-attach-point="iconNode" data-dojo-attach-events="click:onClick"><div class="normal"></div><div class="hover"></div><div class="active"></div></div>',
 		buttonClass:'dxVolumeBtn',
 		iconClass:'dxVolumeIcon',
 		controlType:'Volume',
 
-		postCreate: function(){
+		startup: function(){
 			this.inherited(arguments);
-
+			log('VOL TOOLTIP');
 			this.tooltip = new Tooltip({
 				x:20,
 				y:20,
@@ -34,15 +34,10 @@ define([
 			var trans = fx.transistion(this.tooltip.domNode, 'fade', {hidden:1});
 			fx.flyout(this.domNode, this.tooltip.domNode, {onShow:trans.show, onHide: trans.hide});
 
-			this.connect(this.tooltip.child, 'update', 'onUpdate');
-		},
-
-		onUpdate: function(/*Float*/percentage){
-			log('percentage', percentage);
-		},
-
-		onClick: function(){
-			console.log('click');
+			this.tooltip.child.on('onupdate', this, function(percentage){
+				this.emit('update', percentage);
+			});
+			this.startup = function(){};
 		}
 	});
 });

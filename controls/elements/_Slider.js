@@ -26,13 +26,13 @@ define([
 
 		postCreate: function(){
 			this.inherited(arguments);
-			if(this.width) dom.style(this.domNode, 'width', this.width+'px');
+			if(this.width) { dom.style(this.domNode, 'width', this.width+'px'); }
 			dom.selectable(this.domNode, false);
 			mouse.track(this.domNode, this, 'onMouse');
 		},
 
 		update: function(p){
-			if(this.dragging) return;
+			if(this.dragging) { return; }
 			p = typeof p == 'object' ? p.percentage !== undefined ? p.percentage : p.p : p;
 			this._update(p);
 		},
@@ -43,30 +43,23 @@ define([
 			this.progress.style.width = (p*100).toFixed(1)+"%";
 		},
 
-		onUpdate: function(/*Float*/percentage){
-			// stub
-		},
-
 		constrain: function(p){
 			// ergo: downloaded, but generic
 			p = Math.max(Math.min(p, 1), 0);
 			this.constrain.style.width = (p*100).toFixed(1)+"%";
-			if(p == 1) dom.css(this.domNode, "maxed");
+			if(p == 1) { dom.css(this.domNode, "maxed"); }
 		},
 
 		onMouse: function(e){
-			//log(e.mouse);
 			on.stopEvent(e);
 			if(e.mouse.down){
 				this.dragging = 1;
-				this.onUpdate('start');
 			}else if(e.mouse.up){
 				this.dragging = 0;
-				this.onUpdate('end');
 			}else{
 				this._update(e.mouse.px);
-				this.onUpdate(e.mouse.px);
 			}
+			//this.emit('update', e);
 		}
 	});
 

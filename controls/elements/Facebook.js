@@ -9,7 +9,7 @@ define([
 
 	var log = logger('FBK', 1);
 
-	return declare(_Button, {
+	return declare('dx-media.controls.elements.Facebook', _Button, {
 
 		templateString:'<a href="${facebookUrl}" target="_BLANK" ><div class="dxIcon dxFacebookBtn" data-dojo-attach-event="onclick:onClick"></div></a>',
 		align:'right',

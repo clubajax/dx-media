@@ -9,7 +9,7 @@ define([
 
 	var log = logger('VSL', 0);
 
-	return declare(_Slider, {
+	return declare('dx-media.controls.elements.VolumeSlider', _Slider, {
 
 		controlType:'VolumeSlider',
 
