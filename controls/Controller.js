@@ -62,6 +62,7 @@ define([
 					log('   button:', w.getName());
 					this.map[w.controlType] = w;
 				}, this);
+				this.controls.startup();
 			}
 
 			this.init();
@@ -71,6 +72,16 @@ define([
 			}else{
 				this.sub('/dojox/mobile/screenSize/tablet', this, 'resize');
 				this.own(on(window, 'resize', this, 'resize'));
+			}
+
+			if(this.video){
+				this.video.startup();
+			}
+			if(this.screenButton){
+				this.screenButton.startup();
+			}
+			if(this.preview){
+				this.preview.startup();
 			}
 
 			this.showVideo();
