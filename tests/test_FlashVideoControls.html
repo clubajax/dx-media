@@ -19,7 +19,7 @@
 				"dojo/parser",
 				"dijit/registry",
 				'dx-media/flash/Video',
-				'dx-media/controls/Controller',
+				'dx-media/Html5/Preview',
 				'dx-media/controls/Controlbar',
 				'dx-media/controls/elements/Play',
 				'dx-media/controls/elements/Fullscreen',
@@ -30,31 +30,55 @@
 				'dx-media/controls/elements/Embed',
 				'dx-media/controls/elements/Facebook',
 				'dx-media/controls/elements/Twitter',
+				'dx-media/controls/elements/ScreenPlayButton',
+				'dx-media/controls/Controller'
+			], function(
+				parser, registry, Video, Preview, Controlbar, Play, Fullscreen,
+				Volume, Time, Progress, Duration, Embed, Facebook, Twitter,
+				ScreenPlayButton, Controller){
 
-				'dx-media/Html5/Preview',
-				'dx-media/controls/elements/ScreenPlayButton'
-			], function(parser, registry, Video){
 				parser.parse();
 
-				//var prog = registry.byId('video');
-				//prog.on('play', function(){
-				//	console.warn('vid play');
-				//});
-				//prog.on('progress', function(){
-				//	console.warn('progress');
-				//});
-
-				//return;
-				var vid = new Video({
-					controls:true,
-					autoplay:true,
+				var node = document.getElementById('player2');
+				var video = new Video({
+					controls:false,
+					autoplay:false,
+					id:'programmatic',
 					sources:[
 						{
-							src:'../tests/media/video/Dojo_short.mp4' // relative to SWF, not html
+							// relative to SWF, not html
+							// toUrl helps resolve relative issues
+							src:require.toUrl('../tests/media/video/Dojo_short.mp4')
 						},
 						'./media/video/Dojo_short.webm'
 					]
-				}, 'player2');
+				});
+				node.appendChild(video.domNode);
+
+				var preview = new Preview({src:'media/images/Dojo.png'});
+				node.appendChild(preview.domNode);
+
+				var screenButton = new ScreenPlayButton();
+				node.appendChild(screenButton.domNode);
+
+				var controls = new Controlbar({controls:[
+					Play,
+					Fullscreen,
+					Volume,
+					Time,
+					{Class:Progress, width:100},
+					Duration
+				]});
+				node.appendChild(controls.domNode);
+
+				var controller = new Controller({
+					video:video,
+					controls:controls,
+					preview:preview,
+					screenButton:screenButton
+				});
+				// controller will startup video and control bar
+				controller.startup();
 
 
 		});
@@ -67,6 +91,7 @@
 			<label>Markup Player</label>
 			<div id="player">
 				<video id="video" data-dojo-type="dx-media/flash/Video" data-dojo-props="width:640, height:360">
+					<!--relative to SWF, not html-->
 					<source src='../tests/media/video/Dojo_short.webm'></source>
 					<source src='../tests/media/video/Dojo_short.mp4'></source>
 				</video>

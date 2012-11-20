@@ -27,7 +27,6 @@ define([
 
 		pub = function(method, ref, args){
 			timer(function(){
-				console.log(ref, fVideos[ref]);
 				fVideos[ref]['_'+method](args);
 			}, 1);
 		};

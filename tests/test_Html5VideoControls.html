@@ -63,10 +63,14 @@
 				'dx-media/controls/elements/Twitter',
 				'dx-media/controls/elements/ScreenPlayButton',
 				'dx-media/controls/Controller'
-			], function(parser, Video, Preview, Controlbar, Play, Fullscreen, Volume, Time, Progress, Duration, Embed, Facebook, Twitter, ScreenPlayButton, Controller){
-
+			], function(
+				parser, registry, Video, Preview, Controlbar, Play, Fullscreen,
+				Volume, Time, Progress, Duration, Embed, Facebook, Twitter,
+				ScreenPlayButton, Controller){
+			
 			parser.parse();
-return;
+
+			var node = document.getElementById('player2');
 			var video = new Video({
 				controls:false,
 				autoplay:false,
@@ -78,7 +82,14 @@ return;
 					'./media/video/Dojo_short.webm'
 				]
 			});
-			document.getElementById('player2').appendChild(video.domNode);
+			node.appendChild(video.domNode);
+
+			var preview = new Preview({src:'media/images/Dojo.png'});
+			node.appendChild(preview.domNode);
+
+			var screenButton = new ScreenPlayButton();
+			node.appendChild(screenButton.domNode);
+
 			var controls = new Controlbar({controls:[
 				Play,
 				Fullscreen,
@@ -87,18 +98,16 @@ return;
 				{Class:Progress, width:100},
 				Duration
 			]});
-			document.getElementById('player2').appendChild(controls.domNode);
+			node.appendChild(controls.domNode);
 
 			var controller = new Controller({
 				video:video,
-				controls:controls/*,
-				preview:'preview',
-				screenButton:'screenButton'*/
+				controls:controls,
+				preview:preview,
+				screenButton:screenButton
 			});
-
-			controls.startup();
+			// controller will startup video and control bar
 			controller.startup();
-			video.startup();
 		});
 	</script>
 </body>
