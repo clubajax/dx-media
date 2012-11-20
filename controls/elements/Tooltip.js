@@ -8,7 +8,7 @@ define([
 	"dx-timer/timer"
 ], function(declare, Widget, has, dom, lang, logger){
 
-	var log = logger('TIP', 1);
+	var log = logger('TIP', 0);
 
 	var isIE = has('ie') < 9;
 
@@ -63,6 +63,7 @@ define([
 				this.containerNode = dom('div', 'dxTooltipContainer', this.domNode);
 				this.child = new this.Child();
 				this.containerNode.appendChild(this.child.domNode);
+				this.child.startup();
 			}
 		},
 

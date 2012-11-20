@@ -1,5 +1,6 @@
 define([
 	'dojo/_base/declare',
+	'../common/events',
 	'dx-alias/Widget',
 	'dx-alias/dom',
 	'dx-alias/string',
@@ -7,7 +8,7 @@ define([
 	'dx-alias/on',
 	'dx-alias/has',
 	'dx-alias/log'
-],function(declare, Widget, dom, string, lang, on, has, logger){
+],function(declare, events, Widget, dom, string, lang, on, has, logger){
 	//
 	//	summary:
 	//		An HTML5 Video player designed to work specifically on mobile
@@ -182,7 +183,7 @@ define([
 		renderer:'html5',
 
 		constructor: function(/*Object*/options, /*DOMNode*/node){
-			console.log('MOBILE VIDEO CONSTR', options, node);
+			//console.log('MOBILE VIDEO CONSTR', options, node);
 
 			// need to check if this is parent and if so, call:
 			this.prepareVideoAttributes(options, node);
@@ -245,20 +246,22 @@ define([
 				});
 			}
 
+			// used only for mobile. Extending classes should
+			// make their own connections.
 			if(this.src){
 				on(this.domNode, "play", this, function(){
 					playing = 1;
-					this.emit('play', this.domNode);
+					this.emit(events.PLAY, this.domNode);
 				});
 				on(this.domNode, "pause", this, function(){
 					playing = 0;
-					this.emit('pause', this.domNode);
-					this.emit('stop', this.domNode);
+					this.emit(events.PAUSE, this.domNode);
+					this.emit(events.STOP, this.domNode);
 				});
 				on(this.domNode, "ended", this, function(){
 					playing = 0;
-					this.emit('complete', this.domNode);
-					this.emit('stop', this.domNode);
+					this.emit(events.COMPLETE, this.domNode);
+					this.emit(events.STOP, this.domNode);
 				});
 			}
 
@@ -617,6 +620,7 @@ define([
 	Mobile.deriveType = deriveType;
 	Mobile.supports = supports;
 	Mobile.getSources = getSources;
+	Mobile.events = events;
 
 	return Mobile;
 });

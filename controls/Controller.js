@@ -56,18 +56,21 @@ define([
 			this.map = {};
 			this.buttons = [];
 			if(this.controls){
-				this.buttons = this.controls.getElements();
-				log('BUTTONS', this.buttons, this.controls);
-				this.buttons.forEach(function(w){ this.map[w.controlType] = w; }, this);
+				this.buttons = this.controls.getChildren();
+				//log('BUTTONS', this.buttons);
+				this.buttons.forEach(function(w){
+					log('   button:', w.getName());
+					this.map[w.controlType] = w;
+				}, this);
 			}
 
 			this.init();
 
 			if(isMobile){
-				this.on(mobile, 'updateOrient', this, 'resize');
+				this.own(on(mobile, 'updateOrient', this, 'resize'));
 			}else{
 				this.sub('/dojox/mobile/screenSize/tablet', this, 'resize');
-				this.on(window, 'resize', this, 'resize');
+				this.own(on(window, 'resize', this, 'resize'));
 			}
 
 			this.showVideo();
@@ -88,31 +91,42 @@ define([
 			this.parentNode = /*isMobile ? window : */this.controls.domNode.parentNode;
 
 			if(this.map.Play){
-				this.video.on('onplay', this.map.Play, 'showPause');
-				this.video.on('onpause', this.map.Play, 'showPlay');
-				this.map.Play.on('onplay', this.video, 'play');
-				this.map.Play.on('onpause', this.video, 'pause');
+				this.video.on('play', this.map.Play, 'showPause');
+				this.video.on('pause', this.map.Play, 'showPlay');
+				this.map.Play.on('play', this.video, 'play');
+				this.map.Play.on('pause', this.video, 'pause');
+
+				//this.video.on('play', function(){
+				//		console.warn('CTR VIDEO PLAY');
+				//});
+				//this.video.on('play', function(){
+				//		console.warn('CTR VIDEO ONPLAY');
+				//});
+				//this.video.on('progress', function(){
+				//		console.warn('CTR VIDEO PROGRESS');
+				//});
 			}
 
 			if(this.map.Volume){
-				this.map.Volume.on('onupdate', this.video, 'volume');
+				this.map.Volume.on('update', this.video, 'volume');
 			}
 
 			if(this.map.Progress){
-				this.map.Progress.on('onupdate', this, function(evt){
+				this.map.Progress.on('update', this, function(evt){
 					this.video.seek(evt);
 				});
-					//this.video, 'seek');
-				this.video.on('onprogress', this.map.Progress, 'update');
+				this.video.on('progress', this.map.Progress, 'update');
+			}else{
+				console.warn('********************************NO PROGRESS BAR');
 			}
 
 			if(this.map.Duration){
-				this.video.on('onmeta', this.map.Duration, 'update');
-				this.video.on('onprogress', this.map.Duration, 'update');
+				this.video.on('meta', this.map.Duration, 'update');
+				this.video.on('progress', this.map.Duration, 'update');
 			}
 
 			if(this.map.Time){
-				this.video.on('onprogress', this.map.Time, 'update');
+				this.video.on('progress', this.map.Time, 'update');
 			}
 
 			if(this.map.Fullscreen){
@@ -151,7 +165,7 @@ define([
 
 				if(!!this.fullscreen){
 					this.video.removeFullscreen();
-					this.on(this.map.Fullscreen, 'click', this, function(){
+					this.map.Fullscreen.on('click', this, function(){
 						log('------------------------------- Fullscreen', this.video.renderer);
 						this.fullscreen();
 
@@ -162,30 +176,35 @@ define([
 			}
 
 			if(this.screenButton){
-				this.on(this.screenButton, 'click', this.video, 'play');
-				this.video.on('onplay', this.screenButton, 'hide');
+				this.screenButton.on('click', this.video, 'play');
+				this.video.on('play', this.screenButton, 'hide');
+				var self = this;
+				this.screenButton.on('click', function(){
+					console.warn('this.screenButton CLICK');
+					//self.preview.hide();
+				});
 			}
 
 			if(this.preview){
-				this.video.on('onplay', this.preview, 'hide');
+				this.video.on('play', this.preview, 'hide');
 			}
 
 
 			// These are buttons, not components
 			if(this.map.Video){
-				this.on(this.map.Video, 'click', this, 'showVideo');
+				this.map.Video.on('click', this, 'showVideo');
 			}
 			if(this.map.Slideshow){
-
-				this.on(this.map.Slideshow, 'click', this, 'showSlideshow');
+				this.map.Slideshow.on('click', this, 'showSlideshow');
 			}
 			if(this.map.Vtour){
-				this.on(this.map.Vtour, 'click', this, 'showVtour');
+				this.map.Vtour.on('click', this, 'showVtour');
 			}
 
 			log('mapped');
 		},
 
+		// FIxme~~~!!!!
 		hideComponents: function(){
 			//if(this.video) { this.video.hide(); }
 			if(this.slideshow) { this.slideshow.hide(); }

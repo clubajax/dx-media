@@ -12,18 +12,18 @@ define([
 ], function(has, version, declare, query, Widget, lang, dom, on, timer, logger){
 
 	var
-		log = logger('SWF', 1),
+		log = logger('SWF', 0),
 
 		isIE = has('ie'),
 		swfs = {},
 		flashArgs = {
-			// flashArgs:
-			// 		The properties of the embed object
-			// 		NOT the Swf. Your Swf properties are *flashVars*.
+			//	flashArgs:
+			//		The properties of the embed object
+			//		NOT the Swf. Your Swf properties are *flashVars*.
 			//
-			allowFullScreen: true,			// without this, no fullscreen ability. natch.
-			allowNetworking: "all",			// Needs to be all, and needs a crossdomain.xml
-			allowScriptAccess: "always", 	// Needed for ExternalInterface
+			allowFullScreen: true, // without this, no fullscreen ability. natch.
+			allowNetworking: "all", // Needs to be all, and needs a crossdomain.xml
+			allowScriptAccess: "always", // Needed for ExternalInterface
 			wmode:"opaque",
 			pluginspage:"http://www.macromedia.com/go/getflashplayer",
 			type:"application/x-shockwave-flash",
@@ -40,7 +40,7 @@ define([
 			if(version.major > value) return true; // Player will catch 9
 			if(node) node.innerHTML = "To play this video you need the latest version of the Adobe Flash Player.<br/><a href='http://www.adobe.com/products/flashplayer/' style='font-weight:bold;'>Get Adobe Flash Player</a>";
 			return false;
-		}
+		};
 
 	return declare('dx-media.flash.Swf', [Widget], {
 
@@ -71,7 +71,9 @@ define([
 			options.isDebug = options.isDebug || false;
 
 			if(options.loader){
-				this.movie = dojo.moduleUrl('dx-media', 'resources/loader.swf');
+				//this.movie = dojo.moduleUrl('dx-media', 'resources/loader.swf');
+				this.movie = require.toUrl('dx-media/resources/loader.swf');
+
 				options.loadUrl = options.loadUrl || options.src;
 				options.debugPrefix = options.debugPrefix || 'VID';
 			}else{
@@ -138,15 +140,15 @@ define([
 			}.bind(this);
 			var p = this.flashArgs;
 
-			o.width = o.height = '100%'
+			o.width = o.height = '100%';
 
 			var str;
 
 			if(isIE){
-				var str = 	'<object id="'+id+'" ' + br + tb
-				+ 'classid="clsid:d27cdb6e-ae6d-11cf-96b8-444553540000" ' + br + tb
-				+ 'codebase="http://download.macromedia.com/pub/shockwave/cabs/flash/swflash.cab#version=9,0,0,0" ' + br + tb
-				+ 'width="'+o.width+'" height="'+o.height+'" align="middle">' + br + tb + tb;
+				str = '<object id="'+id+'" ' + br + tb +
+				'classid="clsid:d27cdb6e-ae6d-11cf-96b8-444553540000" ' + br + tb +
+				'codebase="http://download.macromedia.com/pub/shockwave/cabs/flash/swflash.cab#version=9,0,0,0" ' + br + tb +
+				'width="'+o.width+'" height="'+o.height+'" align="middle">' + br + tb + tb;
 
 				// add object param nodes
 				for(nm in p) str += '<param name="'+nm+'" value="'+p[nm]+'" />' + br + tb + tb;
@@ -157,7 +159,7 @@ define([
 
 				str += '</object>';
 			}else{
-				str = '<embed quality="high" type="application/x-shockwave-flash" ' + br + tb + 'pluginspage="http://www.macromedia.com/go/getflashplayer" ' + br + tb
+				str = '<embed quality="high" type="application/x-shockwave-flash" ' + br + tb + 'pluginspage="http://www.macromedia.com/go/getflashplayer" ' + br + tb;
 				str += 'src=' + this.movie + " id=" +id +" " + br + tb;
 
 				// add embed FlashVars

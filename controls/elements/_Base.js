@@ -14,10 +14,11 @@ define([
 		_added:0,
 
 		startup: function(){
+			//console.info('startup', this.getName());
+			this.inherited(arguments);
 			if(this._added){ return; }
 			this._added = 1;
 			var p = this.getParent();
-			//console.log('parent:', p, this.declaredClass, this.domNode, this.domNode.parentNode);
 			if(p){
 				if(this.align == 'right'){
 					p.addChildRight(this);

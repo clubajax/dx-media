@@ -1,6 +1,6 @@
 define([
 	"dojo/_base/declare",
-	"dojo/uacss",
+	"dijit/registry",
 	"dijit/_Container",
 	"dx-alias/Widget",
 	"dx-alias/dom",
@@ -8,11 +8,11 @@ define([
 	"dx-alias/lang",
 	"dx-alias/log",
 	"dx-timer/timer"
-], function(declare, uacss, _Container, Widget, dom, on, lang, logger, timer){
+], function(declare, registry, _Container, Widget, dom, on, lang, logger, timer){
 	//	summary:
 	//		Media player container widget for controls (play button, etc).
 	//
-	var log = logger('CON', 1);
+	var log = logger('CON', 0);
 
 	return declare(Widget, {
 
@@ -27,6 +27,7 @@ define([
 
 		constructor: function(){
 			this.elements = [];
+			this.elementsMap = {};
 		},
 
 		_lftMargin:10,
@@ -35,27 +36,35 @@ define([
 
 		postCreate: function(){
 			this.addControls(this.controls);
-			//timer(this, 'startup', 1);
+			this.inherited(arguments);
 		},
 
 		startup: function(){
 			if(this._started){ return; }
 			this._started = 1;
 
-			var children = this.getElements();
+			var children = this.getChildren();
 			for(var i=0; i<children.length; i++){
+				//console.log('startup:', children[i].getName());
 				children[i].startup();
 			}
 		},
 
-		onClick: function(event){
-			//	summary:
-			//		Fires when one of the control bar buttons has been clicked
-			//log('clicked:', widget.name);
-		},
-
-		getElements: function(){
+		getChildren: function(){
+			// This only needs to be done once. Most widgets get added as children,
+			// but for some reason, a few, such as Progress do not. Any additionally
+			// added children should get registered properly.
+			if(!this._allFound){
+				this._allFound = 1;
+				var children = registry.findWidgets(this.containerNode) || [];
+				children = children.concat(registry.findWidgets(this.containerRight));
+				for(var i=0; i<=children.length; i++){
+					this.register(children[i]);
+				}
+			}
+			// this.elements populated in register()
 			return this.elements;
+
 		},
 
 		addChild: function(widget, node){
@@ -97,13 +106,15 @@ define([
 		},
 
 		register: function(w){
-			log('register', w.name);
-			var widget = w; // scoped
-			this.elements.push(w);
+			if(!w){ return; }
+			var widget = w; // scoped...?
+			var name = widget.getName();
+			if(this.elementsMap[widget.id]){ return; }
+			log('register', name);
+			this.elements.push(widget);
+			this.elementsMap[widget.id] = widget;
 			on(w, 'click', this, function(event){
-				//log('click', widget.name);
 				event.widget = widget;
-				this.onClick(event);
 				this.emit('click', event);
 			});
 		},

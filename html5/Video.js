@@ -1,6 +1,7 @@
 define([
 	'dojo/_base/declare',
 	'../mobile/Video',
+	'../common/events',
 	'dx-alias/dom',
 	'dx-alias/on',
 	'dx-alias/lang',
@@ -9,7 +10,7 @@ define([
 	'dx-alias/log',
 	'dx-timer/timer'
 
-], function(declare, Mobile, dom, on, lang, has, topic, logger, timer){
+], function(declare, Mobile, events, dom, on, lang, has, topic, logger, timer){
 	//
 	//	summary:
 	//		An HTML5 Video player for use in browsers on desktops. Inherits
@@ -58,7 +59,7 @@ define([
 			this.setupEvents();
 
 			// because I hate calling startup manually
-			timer(this, 'startup', 1);
+			//timer(this, 'startup', 1);
 		},
 
 		startup: function(){
@@ -114,6 +115,7 @@ define([
 				"error": "onError",
 				"timeupdate": "_onProgress",
 				"ended": function(){
+					_isplaying = 0;
 					this.complete = true;
 					this.emit('pause', this.getMeta());
 					this.hasPlayed = false;
@@ -181,7 +183,8 @@ define([
 			// when does this actually fire?
 			log(' --------------------- onSeeked');
 			if(this.complete && !this.domNode.paused){
-				this.onRestart();
+				//this.onRestart();
+				//this.emit('restart', this.getMeta());
 			}
 		},
 
@@ -205,8 +208,9 @@ define([
 				}
 				p = ((v.buffered.end(0) / v.duration));
 			}
-			// TODO: meta?
-			this.emit('download', this.getMeta());
+			var m = this.getMeta();
+			m.downloaded = p;
+			this.emit('download', m);
 		},
 
 		// TODO:
@@ -317,6 +321,8 @@ define([
 				return;
 			}
 
+			if(!e.mouse) return;
+console.warn('SEEK ', e);
 			var diff = 0;
 			if(e.mouse.down){
 				this.wasPlaying = this.isPlaying();

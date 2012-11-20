@@ -17,6 +17,7 @@
 
 		require([
 				"dojo/parser",
+				"dijit/registry",
 				'dx-media/flash/Video',
 				'dx-media/controls/Controller',
 				'dx-media/controls/Controlbar',
@@ -28,10 +29,23 @@
 				'dx-media/controls/elements/Duration',
 				'dx-media/controls/elements/Embed',
 				'dx-media/controls/elements/Facebook',
-				'dx-media/controls/elements/Twitter'
-			], function(parser, Video){
+				'dx-media/controls/elements/Twitter',
+
+				'dx-media/Html5/Preview',
+				'dx-media/controls/elements/ScreenPlayButton'
+			], function(parser, registry, Video){
 				parser.parse();
-				new Video({
+
+				//var prog = registry.byId('video');
+				//prog.on('play', function(){
+				//	console.warn('vid play');
+				//});
+				//prog.on('progress', function(){
+				//	console.warn('progress');
+				//});
+
+				//return;
+				var vid = new Video({
 					controls:true,
 					autoplay:true,
 					sources:[
@@ -41,6 +55,8 @@
 						'./media/video/Dojo_short.webm'
 					]
 				}, 'player2');
+
+
 		});
 	</script>
 </head>
@@ -49,13 +65,12 @@
 	<div class='row'>
 		<div class='pWrap s480'>
 			<label>Markup Player</label>
-			<!--<div id="player">
+			<div id="player">
 				<video id="video" data-dojo-type="dx-media/flash/Video" data-dojo-props="width:640, height:360">
-					<source src='../tests/media/video/SightAndSound.webm'></source>
-					<source src='../tests/media/video/SightAndSound_sm.mp4'></source>
-
+					<source src='../tests/media/video/Dojo_short.webm'></source>
+					<source src='../tests/media/video/Dojo_short.mp4'></source>
 				</video>
-				<div id='preview' data-dojo-type="dx-media/Html5/Preview" data-dojo-props="src:'media/images/SightAndSound.jpg'"></div>
+				<div id='preview' data-dojo-type="dx-media/Html5/Preview" data-dojo-props="src:'media/images/Dojo.png'"></div>
 				<div id='screenButton' data-dojo-type="dx-media/controls/elements/ScreenPlayButton"></div>
 				<div id="controls" data-dojo-type="dx-media/controls/Controlbar" data-dojo-props="width:640, height:360">
 					<div data-dojo-type="dx-media/controls/elements/Play"></div>
@@ -69,7 +84,7 @@
 					<div data-dojo-type="dx-media/controls/elements/Twitter"></div>
 				</div>
 				<div data-dojo-type="dx-media/controls/Controller" data-dojo-props="controls:'controls',video:'video',preview:'preview',screenButton:'screenButton'"></div>
-			</div>-->
+			</div>
 		</div>
 		<div class='pWrap2 s480'>
 			<label>Programmatic Player</label>

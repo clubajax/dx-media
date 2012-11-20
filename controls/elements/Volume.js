@@ -35,7 +35,7 @@ define([
 			fx.flyout(this.domNode, this.tooltip.domNode, {onShow:trans.show, onHide: trans.hide});
 
 			this.tooltip.child.on('onupdate', this, function(percentage){
-				this.emit('update', percentage);
+				this.emit('update', {percentage:percentage});
 			});
 			this.startup = function(){};
 		}

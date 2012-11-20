@@ -1,0 +1,121 @@
+<!DOCTYPE HTML>
+<html lang="en">
+
+<head>
+    <title>Test dx-media Button</title>
+	<link href="../resources/dxControlbar.css" rel="stylesheet" />
+	<link href="./test-styles.css" rel="stylesheet" />
+	<meta http-equiv="Content-Type" content="text/html;charset=utf-8" >
+
+	</style>
+    <script>
+        dojoConfig = {
+			async:1,
+			isDebug:1
+		};
+    </script>
+    <script src="../../dojo/dojo.js"></script>
+</head>
+<body>
+	<h1>Test dx-media Controls</h1>
+	<div class='row'>
+		<div class='pWrap s480'>
+			<label>Markup Controls</label>
+			<div id="player">
+				<div data-dojo-type="dx-media/controls/elements/Play"></div>
+			</div>
+		<div class='pWrap2 s480'>
+			<label>Programmatic Controls</label>
+			<div id='player2'></div>
+		</div>
+	</div>
+	<script>
+		require([
+				"dojo/parser",
+				"dojo/_base/declare",
+				"dojo/on",
+				'dx-alias/Widget',
+				'dijit/_WidgetBase',
+				'dx-media/controls/Controlbar',
+				'dx-media/controls/elements/Play',
+				'dx-media/controls/elements/ScreenPlayButton',
+				'dx-media/controls/elements/Fullscreen',
+				'dx-media/controls/elements/Volume',
+				'dx-media/controls/elements/Time',
+				'dx-media/controls/elements/Progress',
+				'dx-media/controls/elements/Duration',
+				'dx-media/controls/elements/Embed',
+				'dx-media/controls/elements/Facebook',
+				'dx-media/controls/elements/Twitter'
+			], function(parser, declare, on, Widget, _WidgetBase, Controlbar, Play, ScreenPlayButton, Fullscreen, Volume, Time, Progress, Duration){
+
+			parser.parse();
+
+			console.info('---- controls 2 ----');
+
+			var W = declare('dx-alias.W', Widget, {
+				constructor: function(){
+
+				},
+				postCreate: function(){
+					this.domNode.innerHTML = 'MIKE';
+					var self = this;
+					setTimeout(function(){
+						self._update();
+					}, 300);
+				},
+				_update: function(){
+					console.log('update...');
+					this.emit('update', {});
+				}
+			});
+
+			var w = new W({});
+
+
+
+			var play = new Play({});
+			var screenButton = new ScreenPlayButton({});
+
+			document.getElementById('player2').appendChild(play.domNode);
+			document.getElementById('player2').appendChild(screenButton.domNode);
+			document.getElementById('player2').appendChild(w.domNode);
+
+			w.startup();
+			play.startup();
+			screenButton.startup();
+
+			w.on('update', function(){
+				console.warn('UPDATE');
+			});
+			on(w.domNode, 'update', function(){
+				console.warn('ON UPDATE');
+			});
+
+
+			play.on('click', function(){
+				console.warn('CLICK');
+			});
+			play.on('onplay', function(){
+				console.warn('ONPLAY');
+			});
+			play.on('play', function(){
+				console.warn('PLAY');
+			});
+			play.on('fuzz', function(){
+				console.warn('FUZZ');
+			});
+			on(play, 'fuzz', function(){
+				console.warn('PLAY');
+			});
+			screenButton.on('click', function(){
+				console.warn('S-CLICK');
+			});
+
+
+
+		});
+
+	</script>
+</body>
+</html>

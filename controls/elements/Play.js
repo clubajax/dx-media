@@ -37,13 +37,9 @@ define([
 
 		_onClick: function(event){
 			log('_onClick');
-			if(this.playShowing){
-				event.controlType = 'play';
-				this.emit('play', event);
-			}else{
-				event.controlType = 'pause';
-				this.emit('pause', event);
-			}
+			event.controlType = this.playShowing ? 'play' : 'pause';
+			this.emit(event.controlType, event);
+
 		}
 	});
 

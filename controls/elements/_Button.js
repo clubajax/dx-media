@@ -46,10 +46,11 @@ define([
 		},
 
 		startup: function(){
+			if(this._started){ return; }
+			this._started = 1;
 			var p = this.getParent();
 			if(p) { this.templateStyle = p.templateStyle; }
 			this.inherited(arguments);
-			this.startup = function(){};
 		},
 
 		select: function(/*Boolean?*/selected){
@@ -59,7 +60,7 @@ define([
 
 		onClick: function(event){
 			// overwrite or connect to me!
-			this.emit('click', event);
+			//this.emit('click', event);
 		}
 	});
 

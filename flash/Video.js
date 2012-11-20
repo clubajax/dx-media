@@ -1,11 +1,12 @@
 define([
 	'dojo/_base/declare',
 	'../mobile/Video',
+	'../common/events',
 	'./Swf',
 	'dx-alias/lang',
 	'dx-alias/log',
 	'dx-timer/timer'
-], function(declare, Mobile, Swf, lang, logger, timer){
+], function(declare, Mobile, events, Swf, lang, logger, timer){
 	//
 	//	summary:
 	//		A Flash video renderer which inherits methods and events from
@@ -14,7 +15,7 @@ define([
 	//		player, for browsers that can't play HTML5 video or specific video
 	//		codecs, like MP4 in Firefox, or anything in old IE.
 	//
-	var log = logger('FLV', 1);
+	var log = logger('FLV', 0);
 
 	var
 		flashVideoCount = 0,
@@ -28,17 +29,17 @@ define([
 			timer(function(){
 				console.log(ref, fVideos[ref]);
 				fVideos[ref]['_'+method](args);
-			}, 1)
-		}
+			}, 1);
+		};
 
 
 	window.dxMediaFlashVideo = {
 		//	summary:
-		// 		A SWF needs a global object to talk to, and that is this object.
-		// 		It collects the methods and passes them to the flash/Video
-		// 		instance based on the ref ID.
-		// 		Note that while this object may be accessible, it only is for
-		// 		the SWF, with the exception of version().
+		//		A SWF needs a global object to talk to, and that is this object.
+		//		It collects the methods and passes them to the flash/Video
+		//		instance based on the ref ID.
+		//		Note that while this object may be accessible, it only is for
+		//		the SWF, with the exception of version().
 		//
 		version: function(){
 			//	summary:
@@ -59,7 +60,7 @@ define([
 		onStatus: function(obj, ref){
 			// [private]
 			//console.log("flash.video_status:", obj.channel, ref);
-			if(obj.channel) pub('onStatus', ref, obj);
+			if(obj.channel) { pub('onStatus', ref, obj); }
 		}
 	};
 
@@ -92,13 +93,18 @@ define([
 				videoRef: this.videoRef,
 				autoplay: this.autoplay,
 				standalone:this.controls,
-				isDebug:true
+				isDebug:false
 			});
 		},
 
 		_timerTries:5,
 		_timer:false,
 		setTimer: function(){
+			//	TODO: Performance
+			//		Check if closures work better than 'this'
+			//		Pause timer when not playing (pause() does it)
+			//		Ensure this is not called twice
+			//
 			if(!this.swf() && !this._timer){
 				log('create timer');
 				this._timerTries--;
@@ -121,7 +127,7 @@ define([
 					this._timer = true;
 					this.time = t;
 
-					this.onProgress(this.getMeta());
+					this.emit(events.PROGRESS, this.getMeta());
 
 					// use a large enough number here:
 					// .5 is greater than the 300ms timer, AND
@@ -129,7 +135,7 @@ define([
 					// fire BEFORE pause - for reporting.
 					if(!this.seeking && !this.complete && t > this.duration - 0.5){
 						this.complete = true;
-						this.onComplete();
+						this.emit(events.COMPLETE, this.getMeta());
 						timer(this, function(){
 							log('onComplete pause:', this.tmr.pause());
 						}, 300);
@@ -145,10 +151,10 @@ define([
 
 		},
 		_onPlay: function(){
-			this.onPlay(this.getMeta());
+			this.emit(events.PLAY, this.getMeta());
 		},
 		_onPause: function(){
-			this.onPause(this.getMeta());
+			this.emit(events.PAUSE, this.getMeta());
 		},
 
 		_onBufferEmpty: function(){
@@ -162,20 +168,24 @@ define([
 					console.error("Video Error:", obj);
 					break;
 				case "/swf/on/download":
-					this.onDownload(obj.value.percent);
+
+					var m = this.getMeta();
+					m.downloaded = obj.value.percent;
+					this.emit(events.DOWNLOAD, m);
 					break;
 				case "/swf/on/fullscreen":
 					obj = {isFullscreen:obj.state=="fullScreen"};
 					break;
 				default:
-					if(obj.event) this['_'+obj.event](obj);
+					//console.log('    event:', obj.event);
+					if(obj.event) { this['_'+obj.event](obj); }
 			}
-			this.onStatus(obj.state);
+			this.emit(events.STATUS, {status:obj.state});
 		},
 
 		_onSwfEmbeded: function(embedNode){
 			log('  -----  onPlayerLoad  -----  ');
-			this.onLoad(this);
+			//this.onLoad(this);
 			this.ei_ready = true;
 			if(this.queue.length){
 				for(var i=0;i<this.queue.length;i++){
@@ -211,25 +221,26 @@ define([
 		 *																		*
 		 ************************************************************************/
 
+
 		_onMeta: function(m){
 			// *** on iPad won't fire until PLAY **************************
-			this._metaHandle && this._metaHandle.remove();
+			if(this._metaHandle){ this._metaHandle.remove(); }
+
 			m.isAd = this.isAd;
 			this.meta = lang.mix(this.meta || {}, m);
 			this.duration = m.duration;
 
 			if(m.path == this.src){
 				this.complete = false;
-				!this.tmr && this.setTimer();
+				if(!this.tmr) { this.setTimer(); }
 			}
 
-			log("META", m, this.duration);
 			if(!this.premetaFired){
 				this.premetaFired = 1;
-				this.onPreMeta(this.meta);
+				this.emit(events.PREMETA, this.meta);
 			}
 			this._metaHandle = timer(this, function(){
-				this.onMeta(this.meta);
+				this.emit(events.META, this.meta);
 			}, 30);
 		},
 
@@ -251,7 +262,7 @@ define([
 				isAd:this.isAd,
 				width:this.meta.width,
 				height:this.meta.height
-			}
+			};
 		},
 
 
@@ -265,12 +276,12 @@ define([
 		},
 
 		showFullscreen: function(){
-			if(this.fsRemoved) return;
+			if(this.fsRemoved) { return; }
 			this.tell('showFullscreen');
 		},
 
 		hideFullscreen: function(){
-			if(this.fsRemoved) return;
+			if(this.fsRemoved) { return; }
 			this.tell('hideFullscreen');
 		},
 
@@ -282,13 +293,13 @@ define([
 		play: function(){
 			log('play');
 			this.tell("doPlay");
-			this.tmr && this.tmr.resume();
+			if(this.tmr){ this.tmr.resume(); }
 		},
 
 		pause: function(){
-			log('PAUSE', this.tmr)
+			log('PAUSE', this.tmr);
 			this.tell("doPause");
-			this.tmr && this.tmr.pause();
+			if(this.tmr){ this.tmr.pause(); }
 		},
 
 		restart: function(){
@@ -334,7 +345,7 @@ define([
 			var m = this.getMeta();
 			m.type = cmd || 'seeking';
 			m.change = diff;
-			this.onSeek(m);
+			this.emit(events.SEEK, m);
 		},
 
 		volume: function(v){
@@ -342,7 +353,7 @@ define([
 		},
 
 		isPlaying: function(){
-			log('get swf isPlaying')
+			log('get swf isPlaying');
 			if(this.swf() && this.ei_ready){
 				return this.swf().isVideoPlaying(); // swf.isPlaying fubars IE - awesome!!
 			}

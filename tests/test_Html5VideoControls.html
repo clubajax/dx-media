@@ -66,7 +66,7 @@
 			], function(parser, Video, Preview, Controlbar, Play, Fullscreen, Volume, Time, Progress, Duration, Embed, Facebook, Twitter, ScreenPlayButton, Controller){
 
 			parser.parse();
-
+return;
 			var video = new Video({
 				controls:false,
 				autoplay:false,
@@ -98,6 +98,7 @@
 
 			controls.startup();
 			controller.startup();
+			video.startup();
 		});
 	</script>
 </body>

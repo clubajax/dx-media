@@ -23,18 +23,18 @@ define([
 			}
 			if(v){
 				_version = {
-					major: (v[0]!=null) ? parseInt(v[0]) : 0,
-					minor: (v[1]!=null) ? parseInt(v[1]) : 0,
-					rev: (v[2]!=null) ? parseInt(v[2]) : 0
+					major: (v[0] !== null) ? parseInt(v[0], 10) : 0,
+					minor: (v[1] !== null) ? parseInt(v[1], 10) : 0,
+					rev: (v[2] !== null) ? parseInt(v[2], 10) : 0
 				};
 			}else{
 				_version = { major: 0, minor: 0, rev: 0 };
 			}
 			_version.toString = function(){
 				return this.major+"."+this.minor+"."+this.rev;
-			}
+			};
 			return _version;
-		}
+		};
 
 		_version = getVersion();
 

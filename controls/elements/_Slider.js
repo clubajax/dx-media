@@ -1,16 +1,16 @@
 define([
 	"dojo/_base/declare",
-	"./_Base",
+	"dx-alias/Widget",
 	"dx-alias/dom",
 	"dx-alias/on",
 	"dx-alias/mouse",
 	"dx-alias/log",
 	"dx-timer/timer"
-], function(declare, _Base, dom, on, mouse, logger){
+], function(declare, Widget, dom, on, mouse, logger){
 
 	var log = logger('_SL',1);
 
-	return declare('dx-media.controls.elements._Slider', [_Base], {
+	return declare('dx-media.controls.elements._Slider', [Widget], {
 
 		templateString:'<div class="dxSlider">'+
 							'<div class="dxSliderConstrain" data-dojo-attach-point="constrain"></div>' +
@@ -59,7 +59,7 @@ define([
 			}else{
 				this._update(e.mouse.px);
 			}
-			//this.emit('update', e);
+			this.emit('update', e);
 		}
 	});
 
