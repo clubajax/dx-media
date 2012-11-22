@@ -1,4 +1,4 @@
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 5//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<!DOCTYPE HTML>
 <html lang="en">
 <head>
     <title>Test dx-media Silverlight Video</title>
@@ -29,8 +29,7 @@
 	<script>
 		require([
 
-				"dx-alias/parser!",
-				//'dojo/parser',
+				'dojo/parser',
 				"dx-media/controls/Controller",
 
 				"dx-alias/shim",
@@ -39,14 +38,9 @@
 				"dx-media/controls/Controlbar",
 				"dx-media/controls/elements/all"
 
-			], function(dxParser, Controller){
+			], function(parser, Controller){
 
-			new Controller({
-				video:'video',
-				controls:'controls',
-				preview:'preview',
-				screenButton:'screenButton'
-			});
+			parser.parse();
 
 		});
 	</script>
@@ -71,6 +65,7 @@
 			<div data-dojo-type="dx-media/controls/elements/Facebook"></div>
 			<div data-dojo-type="dx-media/controls/elements/Twitter"></div>
 		</div>
+		<div data-dojo-type="dx-media/controls/Controller" data-dojo-props="controls:'controls',video:'video',preview:'preview',screenButton:'screenButton'"></div>
 	</div>
 </body>
 </html>

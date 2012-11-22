@@ -160,37 +160,35 @@ define([
 		},
 
 		setupEvents: function(s){
+			//	summary:
+			//		Gathers events from the silverlight media and normalizes
+			//		them for the dx-media event system.
 			// http://msdn.microsoft.com/en-us/library/system.windows.controls.mediaelement_events%28v=vs.95%29.aspx
 
 			if(this.connections) { return; }
 			this.connections = [];
 
-			log(' ------------ setupEvents');
-
+			// like Flash, we have to ping silverlight to get the current progress
 			this.timerHandle = timer(this, function(){
-				this.onProgress(this.getMeta());
+				this.emit('progress', this.getMeta());
 			}, Infinity, this.timeInterval, {paused:1});
 
-
-
-			var ae = function(eventName, fn){
+			var attachEvent = function(eventName, fn){
+				//	summary:
+				//		Helper function that returns an event listener method in
+				//		the proper context (this) bound to the silverlight video.
+				//		This function should generally be called right away to
+				//		establish the connection.
 				var pauseable = lang.bind(this, fn);
-				/*var event = {
-					token:0,
-					paused:0,
-					fn: lang.bind(this, function(evt){
-						pauseable(evt);
-					})
-				}*/
 				this.video.node.AddEventListener(eventName, pauseable);
 				return lang.bind(this, "on"+eventName);
 			}.bind(this);
 
-			var csc = ae('CurrentStateChanged', function(){
+			var csc = attachEvent('CurrentStateChanged', function(){
 				var state = this.state = this.video.node.CurrentState;
-				log('state:', state);
-				if(state == "Playing"){ this.hasPlayed = true; this.onPlay(); }
-				if(state == "Paused"){ this.onPause(); }
+				//log('state:', state);
+				if(state == "Playing"){ this.hasPlayed = true; this.emit('play', this.getMeta()); }
+				if(state == "Paused"){ this.emit('pause', this.getMeta()); }
 				if(state == "Playing" || state == "Buffering" || state == "Opening") {
 					this.complete = false;
 					this.timerHandle.resume();
@@ -201,25 +199,25 @@ define([
 				csc(state);
 			});
 
-			var bpc = ae('BufferingProgressChanged', function(){
+			var bpc = attachEvent('BufferingProgressChanged', function(){
 				bpc(this.video.node.BufferingProgress);
 			});
-			var dpc = ae('DownloadProgressChanged', function(){
+			var dpc = attachEvent('DownloadProgressChanged', function(){
 				dpc(this.video.node.DownloadProgress);
 			});
-			var me = ae('MediaEnded', function(){
+			var me = attachEvent('MediaEnded', function(){
 				this.complete = true;
-				this.onPause();
+				this.emit('pause', this.getMeta());
 				me();
 			});
-			var mo = ae('MediaOpened', function(){
+			var mo = attachEvent('MediaOpened', function(){
 				var meta = {};
 				this.duration = meta.duration = this.video.node.NaturalDuration.Seconds;
 				this.naturalVideoHeight = meta.naturalVideoHeight = this.video.node.NaturalVideoHeight;
 				this.naturalVideoWidth = meta.naturalVideoWidth = this.video.node.NaturalVideoWidth;
 				mo(meta);
 			});
-			var mf = ae('MediaFailed', function(sender, args){
+			var mf = attachEvent('MediaFailed', function(sender, args){
 				var errorObject = {
 					code:args.errorCode,
 					source:sender.Source, // the url trying to be played
@@ -250,19 +248,18 @@ define([
 		},
 
 		onDownloadProgressChanged: function(p){
-			//console.info("DownloadProgressChanged", s);
-			this.onDownload(p);
+			this.emit('download', {percentage:p});
 		},
 		onMediaEnded: function(){
 			console.info("MediaEnded");
 			this.complete = true;
-			this.onPause();
+			this.emit('pause', this.getMeta());
 			this.hasPlayed = false;
-			this.onComplete();
+			this.emit('complete', this.getMeta());
 		},
 		onBufferingProgressChanged: function(/* Float */f){
 			console.info("BufferingProgressChanged", f);
-			this.onBuffer(f);
+			//this.onBuffer(f);
 		},
 
 		onMediaOpened: function(meta){
@@ -297,7 +294,7 @@ define([
 			}else{
 				this.videoReady = true;
 			}
-			this.onStatus(state.toLowerCase());
+			this.emit('status', {state:state.toLowerCase()});
 		},
 
 		centerVideo: function(){
@@ -405,7 +402,7 @@ define([
 			if(this.complete){ this.video.node.Position = '0:0:0'; }//seriously?
 
 			try{
-			this.video.node.Play();
+				this.video.node.Play();
 			}catch(e){
 				console.error(e);
 			}
@@ -442,7 +439,7 @@ define([
 			if(cmd == "start"){
 				this.wasPlaying = this.state == "Playing";
 				if(!this.hasPlayed){
-					topic.pub("/video/on/play", this.getMeta());
+					this.emit('play', this.getMeta());
 				}
 				this.timeWas = this.getTime();
 				this.pause();
@@ -465,6 +462,8 @@ define([
 			m.type = cmd || 'seeking';
 			m.change = diff;
 			topic.pub('/video/on/seek', m);
+			this.emit('seek', m);
+
 
 		},
 
@@ -538,11 +537,11 @@ define([
 			if(this._metaHandle) { this._metaHandle.remove(); }
 			if(!this.premetaFired){
 				this.premetaFired = 1;
-				this.onPreMeta(m);
+				this.emit('premeta', m);
 			}
 
 			this._metaHandle = timer(this, function(){
-				this.onMeta(m);
+				this.emit('meta', m);
 			}, 30);
 		}
 	});

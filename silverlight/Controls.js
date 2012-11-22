@@ -98,7 +98,7 @@ define([
 				this.hide();
 			}
 
-			log('onFullscreen', this.width, this.wasWidth, this.height, this.wasHeight)
+			log('onFullscreen', this.width, this.wasWidth, this.height, this.wasHeight);
 			this.positionElements();
 		},
 
@@ -129,7 +129,7 @@ define([
 		buildProgress: function(){
 			var w = theme.progress.width;
 			var h = theme.progress.height;
-			var grad
+			var grad;
 
 			grad = theme.getGrad(h, dark, norm);
 			this.progressBackNode = new sl.Rect({width:w,height:h, grad:grad, nostroke:1}, this.controlbar);
@@ -148,7 +148,7 @@ define([
 					this.video.seek("end");
 				}else{
 
-					if(e.type == 'down') this.video.seek("start");
+					if(e.type == 'down') { this.video.seek("start"); }
 					var p = lang.clamp(e.x / this.progressWidth, 0, 1);
 					this.updateProgress({p:p});
 					this.video.seek(p);
@@ -168,7 +168,8 @@ define([
 			bo.grad = btnNorm.grad;
 			this.playBtn = new sl.Rect(bo, this.controlbar);
 
-			var x = 0, y = 0, w = theme.play.width, h = theme.play.height;
+			var x = 0, y = 0, w = theme.play.width;
+			h = theme.play.height;
 			var data = [
 				{x:x,y:y,t:'M'},
 				{x:x+w, y:y+h/2, t:'L'},
@@ -184,7 +185,9 @@ define([
 				color:theme.norm
 			}, this.playBtn);
 
-			var p1 = w*.4, p2 = w * .6;
+			var p1 = w * 0.4,
+				p2 = w * 0.6;
+
 			data = [
 				{x:x,y:y,t:'M'},
 				{x:x+p1,y:y,t:'L'},
@@ -223,7 +226,7 @@ define([
 				this.playBtn.fill(btnOver);
 			});
 			this.playBtn.on('click', this, function(evt, e2){
-				log('PLAY CLICK')
+				log('PLAY CLICK');
 				if(this.playing){
 					this.video.pause();
 					//topic.pub("/video/pause");
@@ -256,7 +259,7 @@ define([
 		},
 
 		updateVolume: function(evt){
-			var c, p, volume = evt ? evt.p : .7;
+			var c, p, volume = evt ? evt.p : 0.7;
 			this.volLines.forEach(function(ln, i){
 				p = i===0 ? 0 : i/this.volLines.length;
 				c = p <= volume ? theme.norm : theme.dark;
@@ -271,7 +274,7 @@ define([
 			var lw = (lineWidth+lineGap);
 			var amt = Math.ceil(theme.volume.width/lw);
 
-			var volume = .7;//this.player.volume;
+			var volume = 0.7;//this.player.volume;
 
 			this.volNode = new sl.Rect({x: 0, y: 0, width: theme.volume.width, height: theme.volume.height, color:'#ffffff', nostroke:1, opacity:0, cursor:1}, this.controlbar);
 
@@ -280,8 +283,8 @@ define([
 			for(var i=0; i<amt; i++){
 				p = i===0 ? 0 : i/amt;
 				c = p <= volume ? theme.norm : theme.dark;
-				c = '#ff0000'
-				var rect = new sl.Rect({x:x, y:y, width:lineWidth, height:theme.volume.height, color:c, nostroke:1, opacity:.5}, this.volNode);
+				c = '#ff0000';
+				var rect = new sl.Rect({x:x, y:y, width:lineWidth, height:theme.volume.height, color:c, nostroke:1, opacity:0.5}, this.volNode);
 				this.volLines.push(rect);
 				x += lw;
 			}
@@ -373,7 +376,7 @@ define([
 			x = w - t.volume.width - t.gap - t.gap;
 			y = (t.controls.height - t.volume.height)/2;
 			this.volNode.position({x:x,y:y});
-log('vol', w - t.volume.width - t.gap - t.gap, w, t.volume.width, t.gap )
+			log('vol', w - t.volume.width - t.gap - t.gap, w, t.volume.width, t.gap );
 
 			box = this.durNode.getSize();
 			x = x - t.gap - box.w;
@@ -388,7 +391,7 @@ log('vol', w - t.volume.width - t.gap - t.gap, w, t.volume.width, t.gap )
 			this.downloadNode.size({width:0}).position({x:px1, y:y});
 			this.progressNode.size({width:0}).position({x:px1, y:y});
 
-log('fs:', this.width - bw - t.gap, this.width, bw, t.gap)
+			log('fs:', this.width - bw - t.gap, this.width, bw, t.gap);
 			this.fsBtn.position({x:this.width - bw - t.gap, y:5});
 
 			log(' --- controls set ---');
