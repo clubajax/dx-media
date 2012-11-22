@@ -102,13 +102,13 @@ define([
 				"play": function(){
 					if(!_isplaying){
 						_isplaying = 1;
-						this.emit('play', this.getMeta());
+						this.emit(events.PLAY, this.getMeta());
 					}
 				},
 				"pause": function(){
 					if(_isplaying){
 						_isplaying = 0;
-						this.emit('pause', this.getMeta());
+						this.emit(events.PAUSE, this.getMeta());
 					}
 				},
 				"progress": "_onDownload",
@@ -117,9 +117,9 @@ define([
 				"ended": function(){
 					_isplaying = 0;
 					this.complete = true;
-					this.emit('pause', this.getMeta());
+					this.emit(events.PAUSE, this.getMeta());
 					this.hasPlayed = false;
-					this.emit('complete', this.getMeta());
+					this.emit(events.COMPLETE, this.getMeta());
 				},
 				"seeked":"onSeeked",
 				 "loadedmetadata": function(evt){
@@ -152,7 +152,6 @@ define([
 
 
 		_onmeta: function(m){
-			//log('____________________________onmeta', this.id);
 			// *** on iPad won't fire until PLAY **************************
 			if(this._metaHandle) { this._metaHandle.remove(); }
 			this.meta = lang.mix(this.meta || {}, m);
@@ -166,13 +165,13 @@ define([
 
 			if(!this.premetaFired){
 				this.premetaFired = 1;
-				this.emit('premeta', this.getMeta());
+				this.emit(events.PREMETA, this.getMeta());
 			}
 
 			this._metaHandle = timer(this, function(){
 				log('fire meta');
 				//this.onMeta(this.getMeta());
-				this.emit('meta', this.getMeta());
+				this.emit(events.META, this.getMeta());
 				if(this.autoplay){
 					//this.play();
 				}
@@ -190,7 +189,7 @@ define([
 
 		_onProgress: function(){
 			var m = this.getMeta();
-			if(m.duration) { this.emit('progress', m); }
+			if(m.duration) { this.emit(events.PROGRESS, m); }
 		},
 
 
@@ -210,7 +209,7 @@ define([
 			}
 			var m = this.getMeta();
 			m.downloaded = p;
-			this.emit('download', m);
+			this.emit(events.DOWNLOAD, m);
 		},
 
 		// TODO:
@@ -259,9 +258,10 @@ define([
 		reload: function(path){
 			// TODO:
 			// Does this work with emit events?
-			on.once(this, "onMeta", this, function(){
+			var handle = this.on(events.META, this, function(){
 				this.domNode.currentTime = 0.1;
 				this.domNode.play();
+				handle.remove();
 			});
 			this.pause();
 			this.domNode.src = path;
@@ -316,13 +316,12 @@ define([
 
 		seek: function(e){
 
-			if(!e){
+			if(!e || !e.mouse){
 				this.domNode.currentTime = 0;
 				return;
 			}
 
-			if(!e.mouse) return;
-console.warn('SEEK ', e);
+			//console.warn('SEEK ', e);
 			var diff = 0;
 			if(e.mouse.down){
 				this.wasPlaying = this.isPlaying();
@@ -347,7 +346,7 @@ console.warn('SEEK ', e);
 			var m = this.getMeta();
 			m.type = 'seeking';
 			m.change = diff;
-			this.emit('seek', m);
+			this.emit(events.SEEK, m);
 		},
 
 		volume: function(p){

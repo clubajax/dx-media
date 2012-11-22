@@ -2,6 +2,7 @@ define([
 	'dojo/_base/declare',
 	'dojo/sniff',
 	'../mobile/Video',
+	'../common/events',
 	'dx-alias/dom',
 	'dx-alias/string',
 	'dx-alias/lang',
@@ -12,7 +13,7 @@ define([
 	'./base',
 	'./theme',
 	'./Controls'
-],function(declare, has, Mobile, dom, string, lang, on, topic, logger, timer, sl, theme, Controls){
+],function(declare, has, Mobile, events, dom, string, lang, on, topic, logger, timer, sl, theme, Controls){
 	//
 	//	summary:
 	//		An Silverlight Video player, which inherits methods and events from
@@ -170,7 +171,7 @@ define([
 
 			// like Flash, we have to ping silverlight to get the current progress
 			this.timerHandle = timer(this, function(){
-				this.emit('progress', this.getMeta());
+				this.emit(events.PROGRESS, this.getMeta());
 			}, Infinity, this.timeInterval, {paused:1});
 
 			var attachEvent = function(eventName, fn){
@@ -187,8 +188,8 @@ define([
 			var csc = attachEvent('CurrentStateChanged', function(){
 				var state = this.state = this.video.node.CurrentState;
 				//log('state:', state);
-				if(state == "Playing"){ this.hasPlayed = true; this.emit('play', this.getMeta()); }
-				if(state == "Paused"){ this.emit('pause', this.getMeta()); }
+				if(state == "Playing"){ this.hasPlayed = true; this.emit(events.PLAY, this.getMeta()); }
+				if(state == "Paused"){ this.emit(events.PAUSE, this.getMeta()); }
 				if(state == "Playing" || state == "Buffering" || state == "Opening") {
 					this.complete = false;
 					this.timerHandle.resume();
@@ -207,7 +208,7 @@ define([
 			});
 			var me = attachEvent('MediaEnded', function(){
 				this.complete = true;
-				this.emit('pause', this.getMeta());
+				this.emit(events.PAUSE, this.getMeta());
 				me();
 			});
 			var mo = attachEvent('MediaOpened', function(){
@@ -248,14 +249,14 @@ define([
 		},
 
 		onDownloadProgressChanged: function(p){
-			this.emit('download', {percentage:p});
+			this.emit(events.DOWNLOAD, {percentage:p});
 		},
 		onMediaEnded: function(){
 			console.info("MediaEnded");
 			this.complete = true;
-			this.emit('pause', this.getMeta());
+			this.emit(events.PAUSE, this.getMeta());
 			this.hasPlayed = false;
-			this.emit('complete', this.getMeta());
+			this.emit(events.COMPLETE, this.getMeta());
 		},
 		onBufferingProgressChanged: function(/* Float */f){
 			console.info("BufferingProgressChanged", f);
@@ -294,7 +295,7 @@ define([
 			}else{
 				this.videoReady = true;
 			}
-			this.emit('status', {state:state.toLowerCase()});
+			this.emit(events.STATUS, {state:state.toLowerCase()});
 		},
 
 		centerVideo: function(){
@@ -439,7 +440,7 @@ define([
 			if(cmd == "start"){
 				this.wasPlaying = this.state == "Playing";
 				if(!this.hasPlayed){
-					this.emit('play', this.getMeta());
+					this.emit(events.PLAY, this.getMeta());
 				}
 				this.timeWas = this.getTime();
 				this.pause();
@@ -462,7 +463,7 @@ define([
 			m.type = cmd || 'seeking';
 			m.change = diff;
 			topic.pub('/video/on/seek', m);
-			this.emit('seek', m);
+			this.emit(events.SEEK, m);
 
 
 		},
@@ -537,11 +538,11 @@ define([
 			if(this._metaHandle) { this._metaHandle.remove(); }
 			if(!this.premetaFired){
 				this.premetaFired = 1;
-				this.emit('premeta', m);
+				this.emit(events.PREMETA, m);
 			}
 
 			this._metaHandle = timer(this, function(){
-				this.emit('meta', m);
+				this.emit(events.META, m);
 			}, 30);
 		}
 	});
