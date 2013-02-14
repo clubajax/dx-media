@@ -3,7 +3,7 @@ define([
 	"./_Base",
 	"dx-alias/string",
 	"dx-alias/topic",
-	"dx-alias/dom",
+	"../util/dom",
 	"dx-alias/log"
 ], function(declare, _Base, string, topic, dom, logger){
 

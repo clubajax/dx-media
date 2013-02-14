@@ -5,7 +5,7 @@ define([
 	'dx-alias/Widget',
 	'./Image',
 	'dx-alias/lang',
-	'dx-alias/dom',
+	'../util/dom',
 	'dx-alias/on',
 	'dx-alias/log',
 	'dx-timer/timer'

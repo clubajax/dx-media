@@ -1,7 +1,7 @@
 define([
 	"dojo/_base/declare",
 	"./_Slider",
-	"dx-alias/dom",
+	"../util/dom",
 	"dx-alias/lang",
 	"dx-alias/log",
 	"dx-timer/timer"

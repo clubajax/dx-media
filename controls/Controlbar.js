@@ -3,7 +3,7 @@ define([
 	"dijit/registry",
 	"dijit/_Container",
 	"dx-alias/Widget",
-	"dx-alias/dom",
+	"../util/dom",
 	"dx-alias/on",
 	"dx-alias/lang",
 	"dx-alias/log",

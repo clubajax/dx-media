@@ -6,7 +6,7 @@ define([
 	"dx-alias/Widget",
 	"dx-alias/on",
 	"dx-alias/has",
-	"dx-alias/dom",
+	"../util/dom",
 	"dx-alias/log",
 	'dx-alias/mouse',
 	'dx-alias/string',

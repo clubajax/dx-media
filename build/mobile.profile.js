@@ -144,7 +144,7 @@ var profile = (function(){
 			,"dx-alias/layer":{
 				include:[
 					"dx-alias/Widget",
-					"dx-alias/dom",
+					"dx-media/util/dom",
 					"dx-alias/groups",
 					"dx-alias/has",
 					"dx-alias/lang",

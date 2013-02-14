@@ -1,7 +1,7 @@
 define([
 	"dojo/_base/declare",
 	"./Image",
-	"dx-alias/dom",
+	"../util/dom",
 	"dx-alias/lang",
 	"dx-alias/on",
 	"dx-alias/log",

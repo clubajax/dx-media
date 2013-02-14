@@ -3,7 +3,7 @@ define([
 	'dojo/sniff',
 	'../mobile/Video',
 	'../common/events',
-	'dx-alias/dom',
+	'../util/dom',
 	'dx-alias/string',
 	'dx-alias/lang',
 	'dx-alias/on',

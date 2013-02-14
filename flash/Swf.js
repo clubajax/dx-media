@@ -5,7 +5,7 @@ define([
 	'dojo/io-query',
 	'dx-alias/Widget',
 	'dx-alias/lang',
-	'dx-alias/dom',
+	'../util/dom',
 	'dx-alias/on',
 	'dx-timer/timer',
 	'dx-alias/log'

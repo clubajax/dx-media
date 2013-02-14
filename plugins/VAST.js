@@ -5,7 +5,7 @@ define([
 	"dijit/_Container",
 	"dojo/io/script",
 	"../html5/Image",
-	"dx-alias/dom",
+	"../util/dom",
 	"dx-alias/on",
 	"dx-alias/log",
 	"dx-timer/timer"

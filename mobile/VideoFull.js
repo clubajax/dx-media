@@ -3,7 +3,7 @@ define([
 	'dojo/sniff',
 	'dijit/_WidgetBase',
 	'dijit/_TemplatedMixin',
-	'dx-alias/dom',
+	'../util/dom',
 	'dx-alias/string',
 	'dx-alias/lang',
 	'dx-alias/on',

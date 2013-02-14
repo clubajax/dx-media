@@ -1,7 +1,7 @@
 define([
 	"dojo/_base/declare",
 	"./_Button",
-	"dx-alias/dom",
+	"../util/dom",
 	"dx-alias/string",
 	"dx-alias/log"
 

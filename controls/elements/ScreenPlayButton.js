@@ -1,7 +1,7 @@
 define([
 	"dojo/_base/declare",
 	"dx-alias/Widget",
-	"dx-alias/dom",
+	"../util/dom",
 	"dx-alias/on",
 	"dx-alias/log",
 	"dx-timer/timer"

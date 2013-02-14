@@ -2,7 +2,7 @@ define([
 	'dojo/_base/declare',
 	'../common/events',
 	'dx-alias/Widget',
-	'dx-alias/dom',
+	'../util/dom',
 	'dx-alias/string',
 	'dx-alias/lang',
 	'dx-alias/on',

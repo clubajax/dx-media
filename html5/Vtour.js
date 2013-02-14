@@ -3,7 +3,7 @@ define([
 	'dx-alias/has',
 	'dx-alias/Widget',
 	'./VtourCanvas',
-	'dx-alias/dom',
+	'../util/dom',
 	'dx-alias/on',
 	'dx-alias/mouse',
 	'dx-alias/log'

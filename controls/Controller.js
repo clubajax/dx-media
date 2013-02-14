@@ -3,7 +3,7 @@ define([
 	'../mobile/common',
 	'dx-alias/has',
 	'dx-alias/Widget',
-	'dx-alias/dom',
+	'../util/dom',
 	'dx-alias/on',
 	'dx-alias/lang',
 	'dx-alias/log',

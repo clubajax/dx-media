@@ -2,7 +2,7 @@ define([
 	"dojo/_base/declare",
 	"dx-alias/Widget",
 	"./Image",
-	"dx-alias/dom",
+	"../util/dom",
 	"dx-timer/timer",
 	"dx-alias/lang",
 	"dx-alias/log"
